@@ -50,6 +50,7 @@ namespace DataInputt
             this.name.Text = "";
             this.typ.Text = "";
             this.publisher.Text = "";
+            this.publisherUrl.Text = "";
             this.medium.Text = "";
         }
 
@@ -57,17 +58,42 @@ namespace DataInputt
         {
             var publication = new Publication();
 
-            publication.Id = GetId();
+            if (!string.IsNullOrEmpty(this.id.Text))
+            {
+                var id = int.Parse(this.id.Text);
+                Publication foundPublication = null;
+                foreach (Publication item in this.publikationen.Items)
+                {
+                    if (item.Id == id)
+                    {
+                        foundPublication = item;
+                    }
+                }
 
-            publication.Link = this.link.Text;
-            publication.Date = this.DatePicker.Text;
-            publication.Description = this.Beschreibung.Text;
-            publication.Name = this.name.Text;
-            publication.Type = this.typ.Text;
-            publication.Publisher = this.publisher.Text;
-            publication.Medium = this.medium.Text;
+                foundPublication.Link = this.link.Text;
+                foundPublication.Date = this.DatePicker.Text;
+                foundPublication.Description = this.Beschreibung.Text;
+                foundPublication.Name = this.name.Text;
+                foundPublication.Type = this.typ.Text;
+                foundPublication.Publisher = this.publisher.Text;
+                foundPublication.Medium = this.medium.Text;
+                foundPublication.PublisherUrl = this.publisherUrl.Text;
+            }
+            else
+            {
+                publication.Id = GetId();
 
-            this.publikationen.Items.Add(publication);
+                publication.Link = this.link.Text;
+                publication.Date = this.DatePicker.Text;
+                publication.Description = this.Beschreibung.Text;
+                publication.Name = this.name.Text;
+                publication.Type = this.typ.Text;
+                publication.Publisher = this.publisher.Text;
+                publication.Medium = this.medium.Text;
+                publication.PublisherUrl = this.publisherUrl.Text;
+
+                this.publikationen.Items.Add(publication);
+            }
         }
 
         private int GetId()
@@ -106,6 +132,7 @@ namespace DataInputt
             this.typ.Text = publication.Type;
             this.publisher.Text = publication.Publisher;
             this.medium.Text = publication.Medium;
+            this.publisherUrl.Text = publication.PublisherUrl;
             this.id.Text = publication.Id.ToString();
         }
 
@@ -127,7 +154,7 @@ namespace DataInputt
 
             if (showDialog == true)
             {
-                string json = JsonConvert.SerializeObject(publicationData);
+                string json = JsonConvert.SerializeObject(publicationData, Formatting.Indented);
                 var file = saveFileDialog.OpenFile();
 
                 using (StreamWriter outputFile = new StreamWriter(file))
@@ -151,6 +178,19 @@ namespace DataInputt
                     this.publikationen.Items.Add(publication);
                 }
             }
+        }
+
+        private void MenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+            this.DatePicker.Text = "";
+            this.Beschreibung.Text = "";
+            this.id.Text = "";
+            this.link.Text = "";
+            this.name.Text = "";
+            this.typ.Text = "";
+            this.publisher.Text = "";
+            this.publisherUrl.Text = "";
+            this.medium.Text = "";
         }
     }
 }

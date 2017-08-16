@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DataInputt"
+        ResizeMode="NoResize"
         mc:Ignorable="d"
         Title="MainWindow" Height="500" Width="1000">
     <Grid>
@@ -22,7 +23,7 @@
         <Label Content="Datum" HorizontalAlignment="Left" Margin="31,283,0,0" VerticalAlignment="Top"/>
         <Label Content="Typ" HorizontalAlignment="Left" Margin="31,252,0,0" VerticalAlignment="Top"/>
         <ComboBox x:Name="typ" HorizontalAlignment="Left" Margin="132,252,0,0" VerticalAlignment="Top" Width="120"/>
-        <TextBox x:Name="Beschreibung" HorizontalAlignment="Left" Height="100" Margin="132,318,0,0" VerticalAlignment="Top" Width="376">
+        <TextBox x:Name="Beschreibung" HorizontalAlignment="Left" Height="100" AcceptsReturn="True" TextWrapping="Wrap" Margin="132,318,0,0" VerticalAlignment="Top" Width="376">
 
         </TextBox>
         <TextBox x:Name="name" HorizontalAlignment="Left" Height="18" Margin="132,221,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="376"/>
@@ -31,17 +32,19 @@
         <Label Content="Publisher" HorizontalAlignment="Left" Margin="531,252,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="link" HorizontalAlignment="Left" Height="18" Margin="609,221,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="376"/>
         <TextBox x:Name="publisher" HorizontalAlignment="Left" Height="18" Margin="609,256,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="376"/>
-        <Button Content="Speicher" HorizontalAlignment="Left" Height="36" Margin="783,426,0,0" VerticalAlignment="Top" Width="91" Click="Button_Click_1"/>
+        <Button Content="Speichern" HorizontalAlignment="Left" Height="36" Margin="783,426,0,0" VerticalAlignment="Top" Width="91" Click="Button_Click_1"/>
         <Button Content="Löschen" HorizontalAlignment="Left" Height="36" Margin="894,426,0,0" VerticalAlignment="Top" Width="91" Click="Button_Click"/>
         <Menu HorizontalAlignment="Left" Height="23" VerticalAlignment="Top" Width="995">
-            <MenuItem Header="Neue"></MenuItem>
             <MenuItem Header="Importieren" Click="MenuItem_Click_1"></MenuItem>
             <MenuItem Header="Exportieren" Click="MenuItem_Click"></MenuItem>
         </Menu>
-        <Label Content="Medium" HorizontalAlignment="Left" Margin="531,287,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="medium" HorizontalAlignment="Left" Height="18" Margin="609,291,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="376"/>
-        <Label Content="Id" HorizontalAlignment="Left" Margin="531,318,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="id" HorizontalAlignment="Left" Height="18" Margin="609,322,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="376"/>
+        <Label Content="Medium" HorizontalAlignment="Left" Margin="531,311,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="medium" HorizontalAlignment="Left" Height="18" Margin="609,315,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="376"/>
+        <Label Content="Id" HorizontalAlignment="Left" Margin="531,342,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="id" HorizontalAlignment="Left" Height="18" Margin="609,346,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="376"/>
+        <TextBlock HorizontalAlignment="Left" Margin="531,287,0,0" TextWrapping="Wrap" Text="Publisher URL" VerticalAlignment="Top"/>
+        <TextBox x:Name="publisherUrl" HorizontalAlignment="Left" Height="18" Margin="609,287,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="376"/>
+        <Button Click="MenuItem_Click_2" Content="Neu" HorizontalAlignment="Left" Margin="669,426,0,0" VerticalAlignment="Top" Width="96" RenderTransformOrigin="1.832,1.462" Height="36"/>
 
     </Grid>
 </Window>
