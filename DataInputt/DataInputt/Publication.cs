@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using DataInputt.Annotations;
+using DataInputt.Models;
 
 namespace DataInputt
 {
@@ -11,18 +12,17 @@ namespace DataInputt
         private string description;
         private string link;
         private string type;
-        private string medium;
-        private string publisher;
-        private string publisherUrl;
+        private int mediumId;
         private int id;
+        private bool reviewed;
 
-        public string Date
+        public int Id
         {
-            get { return date; }
+            get { return id; }
             set
             {
-                if (value == date) return;
-                date = value;
+                if (value == id) return;
+                id = value;
                 OnPropertyChanged();
             }
         }
@@ -49,6 +49,17 @@ namespace DataInputt
             }
         }
 
+        public string Date
+        {
+            get { return date; }
+            set
+            {
+                if (value == date) return;
+                date = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string Link
         {
             get { return link; }
@@ -71,46 +82,24 @@ namespace DataInputt
             }
         }
 
-        public string Medium
+        public int MediumId
         {
-            get { return medium; }
+            get { return mediumId; }
             set
             {
-                if (value == medium) return;
-                medium = value;
+                if (value == mediumId) return;
+                mediumId = value;
                 OnPropertyChanged();
             }
         }
 
-        public string Publisher
+        public bool Reviewed
         {
-            get { return publisher; }
+            get { return reviewed; }
             set
             {
-                if (value == publisher) return;
-                publisher = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string PublisherUrl
-        {
-            get { return publisherUrl; }
-            set
-            {
-                if (value == publisherUrl) return;
-                publisherUrl = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public int Id
-        {
-            get { return id; }
-            set
-            {
-                if (value == id) return;
-                id = value;
+                if (value == reviewed) return;
+                reviewed = value;
                 OnPropertyChanged();
             }
         }

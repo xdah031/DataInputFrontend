@@ -1,0 +1,158 @@
+﻿using DataInputt.Models;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace DataInputt
+{
+    /// <summary>
+    /// Interaktionslogik für Projects.xaml
+    /// </summary>
+    public partial class Projects : Page
+    {
+        private Delete delete;
+        private int i = 1;
+        private List<Project> projectsList;
+        private Tuple<bool, int> bearbeiten = new Tuple<bool, int>(false, -1);
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public Projects()
+        {
+            InitializeComponent();
+            delete = Delete.GetInstance();
+            ProjectRepo.ProjectCollectionImported += ProjectRepo_ProjectCollectionImported;
+            projectsList = new List<Project>();
+            //{
+            //    new Project
+            //    {
+            //        Id = i++, Name = "Project1", From = "10.05.2016", To = "10.07.2016", Tools = new string[] {"Jetbrains", "Visual Studio" }, Sector = "Autos"
+            //    },
+            //    new Project
+            //    {
+            //        Id = i++, Name = "Project2", From = "17.01.2016", To = "25.01.2016", Tools = new string[] {"Visual Studio", "Resharper" }, Sector = "Medizin"
+            //    },
+            //    new Project
+            //    {
+            //        Id = i++, Name = "Project3", From = "30.05.2017", To = "10.06.2017", Tools = new string[] {"Jetbrains", "Visual Studio" }, Sector = "Autos"
+            //    }
+            //};
+            //foreach (var item in projectsList)
+            //{
+            //    publisherListView.Items.Add(item);
+            //}
+            ProjectRepo.Projects = projectsList;
+        }
+
+        private void ProjectRepo_ProjectCollectionImported(object sender, EventArgs e)
+        {
+            projectsList.Clear();
+            foreach (var item in (List<Project>)sender)
+            {
+                projectsList.Add(item);
+                publisherListView.Items.Clear();
+            }
+            foreach (var item in projectsList)
+            {
+                publisherListView.Items.Add(item);
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            bearbeiten = new Tuple<bool, int>(true, projectsList.Find(p => p.Id == (int)((Button)sender).CommandParameter).Id);
+            Project project = projectsList.Find(p => p.Id == (int)((Button)sender).CommandParameter);
+            tb1.Text = project.Name;
+            DatePicker1.Text = project.From;
+            DatePicker2.Text = project.To;
+            StringBuilder builder = new StringBuilder();
+            foreach (string tool in project.Tools)
+            {
+                builder.Append(tool + ", ");
+            }
+            builder.Remove(builder.Length - 2, 2);
+            tb3.Text = builder.ToString();
+            tb4.Text = project.Sector;
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            projectsList.Remove(projectsList.Find(p => p.Id == (int)((Button)sender).CommandParameter));
+            foreach (var item in publisherListView.Items)
+            {
+                    if (!projectsList.Contains((Project)item))
+                    {
+                        delete.OnDeleteSomething(this, (Project)item);
+                    }
+            }
+            publisherListView.Items.Clear();
+            foreach (var item in projectsList)
+            {
+                publisherListView.Items.Add(item);
+            }
+            ProjectRepo.Projects = projectsList;
+        }
+
+        private void Button_Click_2(object sender, RoutedEventArgs e)
+        {
+            if (bearbeiten.Item1 == true)
+            {
+                projectsList.RemoveAt(projectsList.FindIndex(p => p.Id == bearbeiten.Item2));
+                List<string> tools = new List<string>();
+                projectsList.Add(new Project() { Id = bearbeiten.Item2, Name = tb1.Text, From = DatePicker1.Text, To = DatePicker2.Text, Tools = tb3.Text.Replace(" ", "").Split(','), Sector = tb4.Text });
+                projectsList.Sort(new ProjectsComparer());
+                bearbeiten = new Tuple<bool, int>(false, -1);
+            }
+            else
+            {
+                projectsList.Add(new Project() { Id = i++, Name = tb1.Text, From = DatePicker1.Text, To = DatePicker2.Text, Tools = tb3.Text.Replace(" ", "").Split(','), Sector = tb4.Text });
+            }
+
+            publisherListView.Items.Clear();
+            foreach (var item in projectsList)
+            {
+                publisherListView.Items.Add(item);
+            }
+            ProjectRepo.Projects = projectsList;
+            tb1.Text = String.Empty;
+            tb3.Text = tb1.Text;
+            tb4.Text = tb1.Text;
+            DatePicker1.SelectedDate = null;
+            DatePicker2.SelectedDate = null;
+        }
+
+        private void Button_Click_3(object sender, RoutedEventArgs e)
+        {
+            tb1.Text = "";
+            tb3.Text = "";
+            tb4.Text = "";
+            DatePicker1.SelectedDate = null;
+            DatePicker2.SelectedDate = null;
+        }
+    }
+
+    class ProjectsComparer : IComparer<Project>
+    {
+        public int Compare(Project x, Project y)
+        {
+            if (x.Id != y.Id)
+                return x.Id > y.Id ? 1 : -1;
+            if (x.Name != y.Name)
+                return StringComparer.Create(CultureInfo.CurrentCulture, true).Compare(x.Name, y.Name);
+            return 0;
+        }
+    }
+}
