@@ -1,0 +1,41 @@
+﻿<Page
+    x:Class="DataInputt.Page1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:DataInputt"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Page1"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    mc:Ignorable="d">
+    <Page.Resources>
+        <DataTemplate x:Key="tempplate1">
+            <Button
+                Click="Button_Click"
+                CommandParameter="{Binding Id}"
+                Content="Bearbeiten" />
+        </DataTemplate>
+        <DataTemplate x:Key="template2">
+            <Button
+                Background="Red"
+                Click="Button_Click1"
+                CommandParameter="{Binding Id}"
+                Content="Löschen" />
+        </DataTemplate>
+        <Style x:Key="listItem" TargetType="{x:Type ListViewItem}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Name}" Value="">
+                    <Setter Property="Background" Value="Red" />
+                    <Setter Property="Foreground" Value="White" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding PublisherId}" Value="0">
+                    <Setter Property="Background" Value="Red" />
+                    <Setter Property="Foreground" Value="White" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+
+    <Grid />
+</Page>
