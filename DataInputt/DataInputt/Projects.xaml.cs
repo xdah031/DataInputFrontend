@@ -75,17 +75,26 @@ namespace DataInputt
         {
             bearbeiten = new Tuple<bool, int>(true, projectsList.Find(p => p.Id == (int)((Button)sender).CommandParameter).Id);
             Project project = projectsList.Find(p => p.Id == (int)((Button)sender).CommandParameter);
-            tb1.Text = project.Name;
+            tb1.Text = project.Abstract;
+            tb5.Text = project.Position;
             DatePicker1.Text = project.From;
             DatePicker2.Text = project.To;
+            tb6.Text = project.Description;
             StringBuilder builder = new StringBuilder();
             foreach (string tool in project.Tools)
             {
                 builder.Append(tool + ", ");
             }
+            StringBuilder builder2 = new StringBuilder();
+            foreach (string tool in project.Tasks)
+            {
+                builder2.Append(tool + ", ");
+            }
             builder.Remove(builder.Length - 2, 2);
             tb3.Text = builder.ToString();
+            tb7.Text = builder2.ToString();
             tb4.Text = project.Sector;
+            myCheckbox.IsChecked = project.UntilToday;
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -112,13 +121,20 @@ namespace DataInputt
             {
                 projectsList.RemoveAt(projectsList.FindIndex(p => p.Id == bearbeiten.Item2));
                 List<string> tools = new List<string>();
-                projectsList.Add(new Project() { Id = bearbeiten.Item2, Name = tb1.Text, From = DatePicker1.Text, To = DatePicker2.Text, Tools = tb3.Text.Replace(" ", "").Split(','), Sector = tb4.Text });
+                Project x = new Project() { Id = bearbeiten.Item2, Abstract = tb1.Text, From = DatePicker1.Text, To = DatePicker2.Text, Tools = tb3.Text.Replace(" ", "").Split(','), Tasks = tb7.Text.Replace(" ", "").Split(','), Position = tb5.Text, Description = tb6.Text, Sector = tb4.Text };
+                if (myCheckbox.IsChecked.Value)
+                {
+                    x.UntilToday = true;
+                    x.To = "";
+                }
+                x.UntilToday = myCheckbox.IsChecked.Value;
+                projectsList.Add(x);
                 projectsList.Sort(new ProjectsComparer());
                 bearbeiten = new Tuple<bool, int>(false, -1);
             }
             else
             {
-                projectsList.Add(new Project() { Id = i++, Name = tb1.Text, From = DatePicker1.Text, To = DatePicker2.Text, Tools = tb3.Text.Replace(" ", "").Split(','), Sector = tb4.Text });
+                projectsList.Add(new Project() { Id = i++, Abstract = tb1.Text, From = DatePicker1.Text, To = myCheckbox.IsChecked.Value ? "" : DatePicker2.Text, Tools = tb3.Text.Replace(" ", "").Split(','), Sector = tb4.Text, Tasks = tb7.Text.Replace(" ", "").Split(','), Position = tb5.Text, Description = tb6.Text, UntilToday = myCheckbox.IsChecked.Value });
             }
 
             publisherListView.Items.Clear();
@@ -130,6 +146,10 @@ namespace DataInputt
             tb1.Text = String.Empty;
             tb3.Text = tb1.Text;
             tb4.Text = tb1.Text;
+            tb5.Text = tb1.Text;
+            tb6.Text = tb1.Text;
+            tb7.Text = tb1.Text;
+            myCheckbox.IsChecked = null;
             DatePicker1.SelectedDate = null;
             DatePicker2.SelectedDate = null;
         }
@@ -139,6 +159,10 @@ namespace DataInputt
             tb1.Text = "";
             tb3.Text = "";
             tb4.Text = "";
+            tb5.Text = "";
+            tb6.Text = "";
+            tb7.Text = "";
+            myCheckbox.IsChecked = null;
             DatePicker1.SelectedDate = null;
             DatePicker2.SelectedDate = null;
         }
@@ -150,8 +174,8 @@ namespace DataInputt
         {
             if (x.Id != y.Id)
                 return x.Id > y.Id ? 1 : -1;
-            if (x.Name != y.Name)
-                return StringComparer.Create(CultureInfo.CurrentCulture, true).Compare(x.Name, y.Name);
+            if (x.Abstract != y.Abstract)
+                return StringComparer.Create(CultureInfo.CurrentCulture, true).Compare(x.Abstract, y.Abstract);
             return 0;
         }
     }

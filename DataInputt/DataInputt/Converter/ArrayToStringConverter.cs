@@ -12,6 +12,20 @@ namespace DataInputt.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
+            if (value == null)
+                return "";
+            if(value is string[] arr)
+            {
+                if (arr.Length < 1)
+                {
+                    return "";
+                }
+            }
+            else
+            {
+                return "";
+            }
+
             StringBuilder builder = new StringBuilder();
             foreach(string item in (string[])value)
             {

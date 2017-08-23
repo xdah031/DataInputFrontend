@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="MainWindow"
     Width="1000"
-    Height="600"
+    Height="630"
     ResizeMode="NoResize"
     mc:Ignorable="d">
     <Window.Resources>
@@ -54,15 +54,15 @@
                             <Style TargetType="{x:Type ListViewItem}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Name}" Value="">
-                                        <Setter Property="Background" Value="Red" />
+                                        <Setter Property="Background" Value="LightSalmon" />
                                         <Setter Property="Foreground" Value="White" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding MediumId}" Value="0">
-                                        <Setter Property="Background" Value="Red" />
+                                        <Setter Property="Background" Value="LightSalmon" />
                                         <Setter Property="Foreground" Value="White" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Reviewed}" Value="False">
-                                        <Setter Property="Background" Value="Blue" />
+                                        <Setter Property="Background" Value="LightBlue" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

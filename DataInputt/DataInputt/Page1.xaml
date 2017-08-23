@@ -26,11 +26,11 @@
         <Style x:Key="listItem" TargetType="{x:Type ListViewItem}">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Name}" Value="">
-                    <Setter Property="Background" Value="Red" />
+                    <Setter Property="Background" Value="LightSalmon" />
                     <Setter Property="Foreground" Value="White" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding PublisherId}" Value="0">
-                    <Setter Property="Background" Value="Red" />
+                    <Setter Property="Background" Value="LightSalmon" />
                     <Setter Property="Foreground" Value="White" />
                 </DataTrigger>
             </Style.Triggers>

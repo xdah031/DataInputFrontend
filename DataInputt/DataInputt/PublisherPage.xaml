@@ -16,14 +16,14 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding Name}" />
                 <Button Content="Bearbeiten" />
-                <Button Background="Red" Content="Löschen" />
+                <Button Background="LightSalmon" Content="Löschen" />
             </StackPanel>
         </DataTemplate>
         <Style x:Key="tbStyleB" TargetType="TextBlock">
             <Setter Property="Background" Value="Yellow" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Text}" Value="">
-                    <Setter Property="Background" Value="Red" />
+                    <Setter Property="Background" Value="LightSalmon" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -66,7 +66,7 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Button
-                                    Background="Red"
+                                    Background="LightSalmon"
                                     Click="Button_Click_1"
                                     CommandParameter="{Binding Id}"
                                     Content="Löschen" />
@@ -82,7 +82,7 @@
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding Name}" Value="" />
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Background" Value="Red" />
+                            <Setter Property="Background" Value="LightSalmon" />
                             <Setter Property="Foreground" Value="White" />
                         </MultiDataTrigger>
                     </Style.Triggers>

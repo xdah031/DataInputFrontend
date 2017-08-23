@@ -128,7 +128,14 @@ namespace DataInputt
                 foundPublication.Description = this.Beschreibung.Text;
                 foundPublication.Name = this.name.Text;
                 foundPublication.Type = this.typ.Text;
-                foundPublication.MediumId = ((Medium) this.medium.SelectedItem).Id;
+                try
+                {
+                    foundPublication.MediumId = ((Medium)this.medium.SelectedItem).Id;
+                }
+                catch (NullReferenceException ex)
+                {
+                    return;
+                }
             }
             else
             {
@@ -139,7 +146,14 @@ namespace DataInputt
                 publication.Description = this.Beschreibung.Text;
                 publication.Name = this.name.Text;
                 publication.Type = this.typ.Text;
-                publication.MediumId = ((Medium) this.medium.SelectedItem).Id;
+                try
+                {
+                    publication.MediumId = ((Medium)this.medium.SelectedItem).Id;
+                }
+                catch(NullReferenceException ex)
+                {
+                    return;
+                }
 
                 this.publikationen.Items.Add(publication);
             }
