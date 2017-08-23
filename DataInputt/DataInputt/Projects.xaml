@@ -48,7 +48,7 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Button
-                                    Background="Red"
+                                    Background="LightSalmon"
                                     Click="Button_Click_1"
                                     CommandParameter="{Binding Id}"
                                     Content="Löschen" />
@@ -64,7 +64,7 @@
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding Name}" Value="" />
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Background" Value="Red" />
+                            <Setter Property="Background" Value="LightSalmon" />
                             <Setter Property="Foreground" Value="White" />
                         </MultiDataTrigger>
                     </Style.Triggers>
