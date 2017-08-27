@@ -12,6 +12,8 @@
     mc:Ignorable="d">
     <Page.Resources>
         <converter:ArrayToStringConverter x:Key="conv" />
+        <converter:NegationConverter x:Key="nconv" />
+        <converter:WhatTheHeckIsItDoingConverter x:Key="heckConv" />
     </Page.Resources>
 
     <Grid>
@@ -29,9 +31,12 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn DisplayMemberBinding="{Binding Id}" Header="Id" />
-                    <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Bezeichnung" />
+                    <GridViewColumn DisplayMemberBinding="{Binding Abstract}" Header="Kurzbeschreibung" />
+                    <GridViewColumn DisplayMemberBinding="{Binding Position}" Header="Position" />
                     <GridViewColumn DisplayMemberBinding="{Binding From}" Header="Von" />
-                    <GridViewColumn DisplayMemberBinding="{Binding To}" Header="Bis" />
+                    <GridViewColumn DisplayMemberBinding="{Binding To, Converter={StaticResource heckConv}}" Header="Bis" />
+                    <GridViewColumn DisplayMemberBinding="{Binding Abstract}" Header="Beschreibung" />
+                    <GridViewColumn DisplayMemberBinding="{Binding Tasks, Converter={StaticResource conv}}" Header="Aufgaben" />
                     <GridViewColumn DisplayMemberBinding="{Binding Tools, Converter={StaticResource conv}}" Header="Verwendete Werkzeuge" />
                     <GridViewColumn DisplayMemberBinding="{Binding Sector}" Header="Branche" />
                     <GridViewColumn>
@@ -84,28 +89,40 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="101" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock>Bezeichnung</TextBlock>
+            <TextBlock>Kurzbeschreibung</TextBlock>
             <TextBox
                 x:Name="tb1"
                 Grid.Row="0"
                 Grid.Column="1"
                 Width="200" />
 
-            <TextBlock
+            <TextBlock Grid.Row="1" Margin="0,10,0,0">Position</TextBlock>
+            <TextBox
+                x:Name="tb5"
                 Grid.Row="1"
+                Grid.Column="1"
+                Width="200"
+                Margin="0,10,0,0" />
+
+            <TextBlock
+                Grid.Row="2"
                 Grid.Column="0"
                 Margin="0,10,0,0">
                 Von
             </TextBlock>
             <DatePicker
                 x:Name="DatePicker1"
-                Grid.Row="1"
+                Grid.Row="2"
                 Grid.Column="1"
                 Width="200"
                 Margin="0,10,0,0"
@@ -113,54 +130,90 @@
                 VerticalAlignment="Top" />
 
             <TextBlock
-                Grid.Row="2"
+                Grid.Row="3"
                 Grid.Column="0"
                 Margin="0,10,0,0">
                 Bis
             </TextBlock>
             <DatePicker
                 x:Name="DatePicker2"
-                Grid.Row="2"
+                Grid.Row="3"
                 Grid.Column="1"
                 Width="200"
                 Margin="0,10,0,0"
                 HorizontalAlignment="Left"
-                VerticalAlignment="Top" />
+                VerticalAlignment="Top"
+                IsEnabled="{Binding Source={x:Reference myCheckbox}, Path=IsChecked, Converter={StaticResource nconv}}" />
 
             <TextBlock
-                Grid.Row="3"
+                Grid.Row="4"
+                Grid.Column="0"
+                Margin="0,10,0,0">
+                Bis heute
+            </TextBlock>
+            <CheckBox
+                x:Name="myCheckbox"
+                Grid.Row="4"
+                Grid.Column="1"
+                Margin="0,10,32,0"
+                VerticalAlignment="Center"
+                IsChecked="False" />
+
+            <TextBlock Grid.Row="5" Margin="0,10,0,0">Beschreibung</TextBlock>
+            <TextBox
+                x:Name="tb6"
+                Grid.Row="5"
+                Grid.Column="1"
+                Width="200"
+                Margin="0,10,0,0" />
+
+            <TextBlock
+                Grid.Row="6"
+                Grid.Column="0"
+                Margin="0,10,0,0">
+                Aufgaben
+            </TextBlock>
+            <TextBox
+                x:Name="tb7"
+                Grid.Row="6"
+                Grid.Column="1"
+                Width="200"
+                Margin="0,10,0,0" />
+
+            <TextBlock
+                Grid.Row="7"
                 Grid.Column="0"
                 Margin="0,10,0,0">
                 Tools
             </TextBlock>
             <TextBox
                 x:Name="tb3"
-                Grid.Row="3"
+                Grid.Row="7"
                 Grid.Column="1"
                 Width="200"
                 Margin="0,10,0,0" />
 
             <TextBlock
-                Grid.Row="4"
+                Grid.Row="8"
                 Grid.Column="0"
                 Margin="0,10,0,0">
                 Branche
             </TextBlock>
             <TextBox
                 x:Name="tb4"
-                Grid.Row="4"
+                Grid.Row="8"
                 Grid.Column="1"
                 Width="200"
                 Margin="0,10,0,0" />
 
             <Button
-                Grid.Row="5"
+                Grid.Row="9"
                 Grid.ColumnSpan="2"
                 Margin="0,10,0,0"
                 Click="Button_Click_2"
                 Content="Speichern" />
             <Button
-                Grid.Row="6"
+                Grid.Row="10"
                 Grid.ColumnSpan="2"
                 Margin="0,10,0,0"
                 Click="Button_Click_3"

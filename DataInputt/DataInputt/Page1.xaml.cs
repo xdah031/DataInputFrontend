@@ -295,7 +295,14 @@ namespace DataInputt
             m.Id = zahl++;
             m.Name = tb1.Text;
             m.Link = tb2.Text;
-            m.PublisherId = ((Publisher)comboBoxEnkel.SelectedItem).Id;
+            try
+            {
+                m.PublisherId = ((Publisher)comboBoxEnkel.SelectedItem).Id;
+            }
+            catch(NullReferenceException ex)
+            {
+                return;
+            }
             listViewKind.Items.Add(m);
             List<Medium> a = new List<Medium>();
             foreach (var item in listViewKind.Items)
