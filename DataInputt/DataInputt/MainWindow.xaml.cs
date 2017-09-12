@@ -6,6 +6,10 @@ using Newtonsoft.Json;
 using System.Windows.Controls;
 using DataInputt.Models;
 using System;
+using System.Data.SqlClient;
+using DataInputt.DB;
+using System.Data.SqlTypes;
+using System.Globalization;
 
 namespace DataInputt
 {
@@ -28,26 +32,28 @@ namespace DataInputt
             {
                 this.typ.Items.Add(dataType);
             }
-            //Publication publication1 = new Publication()
-            //{
-            //    Id = 1,
-            //    Name = "Publikation1",
-            //    Description = "My first publication",
-            //    Date = "02.08.2017",
-            //    Type = "Workshop",
-            //    MediumId = 1
-            //};
-            //Publication publication2 = new Publication()
-            //{
-            //    Id = 2,
-            //    Name = "Publikation2",
-            //    Description = "My second publication",
-            //    Date = "03.08.2017",
-            //    Type = "Usergroup",
-            //    MediumId = 2
-            //};
-            //publikationen.Items.Add(publication1);
-            //publikationen.Items.Add(publication2);
+
+            
+            Publication publication1 = new Publication()
+            {
+                Id = 1,
+                Name = "Publikation1",
+                Description = "My first publication",
+                Date = "02.08.2017",
+                Type = "Workshop",
+                MediumId = 1
+            };
+            Publication publication2 = new Publication()
+            {
+                Id = 2,
+                Name = "Publikation2",
+                Description = "My second publication",
+                Date = "03.08.2017",
+                Type = "Usergroup",
+                MediumId = 2
+            };
+            publikationen.Items.Add(publication1);
+            publikationen.Items.Add(publication2);
         }
 
         private void Delete_SomethingDeleted(object sender, DeleteEventArgs e)
@@ -257,75 +263,89 @@ namespace DataInputt
             if (showDialog == true)
             {
                 var json = File.ReadAllText(openFileDialog.FileName);
-                if (json.Contains("\"Publications\": ["))
+                Do(json);
+            }
+        }
+
+        private void Do(string json)
+        {
+            if (json.Contains("\"Publications\": ["))
+            {
+                this.publikationen.Items.Clear();
+                if (json.Contains("\"PublisherUrl\":"))
                 {
-                    if (json.Contains("\"PublisherUrl\":"))
+                    var publicationData = JsonConvert.DeserializeObject<OldPublicationData>(json);
+
+                    MediaRepo.Media.Clear();
+                    PublisherRepo.Publisher.Clear();
+                    this.publikationen.Items.Clear();
+
+                    foreach (var publication in publicationData.Publications)
                     {
-                        var publicationData = JsonConvert.DeserializeObject<OldPublicationData>(json);
+                        Publisher publ = new Publisher();
+                        publ.Id = PublisherRepo.Publisher.Count + 1;
+                        publ.Name = publication.Publisher;
+                        publ.Link = publication.PublisherUrl;
+                        PublisherRepo.Publisher.Add(publ);
 
-                        MediaRepo.Media.Clear();
-                        PublisherRepo.Publisher.Clear();
-                        this.publikationen.Items.Clear();
+                        Medium med = new Medium();
+                        med.Id = MediaRepo.Media.Count + 1;
+                        med.Name = publication.Medium;
+                        med.PublisherId = publ.Id;
+                        MediaRepo.Media.Add(med);
 
-                        foreach (var publication in publicationData.Publications)
-                        {
-                            Publisher publ = new Publisher();
-                            publ.Id = PublisherRepo.Publisher.Count + 1;
-                            publ.Name = publication.Publisher;
-                            publ.Link = publication.PublisherUrl;
-                            PublisherRepo.Publisher.Add(publ);
+                        Publication pub = new Publication();
+                        pub.Id = publication.Id;
+                        pub.Name = publication.Name;
+                        pub.Description = publication.Description;
+                        pub.Date = publication.Date;
+                        pub.Link = publication.Link;
+                        pub.Reviewed = false;
+                        pub.Type = publication.Type;
+                        pub.MediumId = med.Id;
 
-                            Medium med = new Medium();
-                            med.Id = MediaRepo.Media.Count + 1;
-                            med.Name = publication.Medium;
-                            med.PublisherId = publ.Id;
-                            MediaRepo.Media.Add(med);
+                        this.publikationen.Items.Add(pub);
 
-                            Publication pub = new Publication();
-                            pub.Id = publication.Id;
-                            pub.Name = publication.Name;
-                            pub.Description = publication.Description;
-                            pub.Date = publication.Date;
-                            pub.Link = publication.Link;
-                            pub.Reviewed = false;
-                            pub.Type = publication.Type;
-                            pub.MediumId = med.Id;
-
-                            this.publikationen.Items.Add(pub);
-
-                            PublisherRepo.OnPublisherCollectionImport();
-                            MediaRepo.OnMediaCollectionImport();
-                        }
-                    }
-                    else
-                    {
-                        var publicationData = JsonConvert.DeserializeObject<PublicationData>(json);
-
-                        foreach (var publication in publicationData.Publications)
-                        {
-                            this.publikationen.Items.Add(publication);
-                        }
+                        PublisherRepo.OnPublisherCollectionImport();
+                        MediaRepo.OnMediaCollectionImport();
                     }
                 }
-                else if (json.Contains("\"Publisher\": ["))
+                else
                 {
-                    var publicationData = JsonConvert.DeserializeObject<PublisherRepoInstance>(json);
-                    PublisherRepo.Publisher = publicationData.Publisher;
-                    PublisherRepo.OnPublisherCollectionImport();
-                }
-                else if (json.Contains("\"Media\": ["))
-                {
-                    var publicationData = JsonConvert.DeserializeObject<MediaRepoInstance>(json);
-                    MediaRepo.Media = publicationData.Media;
-                    MediaRepo.OnMediaCollectionImport();
-                }
-                else if (json.Contains("\"Projects\": ["))
-                {
-                    var publicationData = JsonConvert.DeserializeObject<ProjectRepoInstance>(json);
-                    ProjectRepo.Projects = publicationData.Projects;
-                    ProjectRepo.OnProjectCollectionImport();
+                    //TODO Check if table exist, drop and create new
+                    var publicationData = JsonConvert.DeserializeObject<PublicationData>(json);
+
+                    foreach (var publication in publicationData.Publications)
+                    {
+                        this.publikationen.Items.Add(publication);
+                    }
                 }
             }
+            else if (json.Contains("\"Publisher\": ["))
+            {
+                PublisherRepo.Publisher.Clear();
+                var publicationData = JsonConvert.DeserializeObject<PublisherRepoInstance>(json);
+                PublisherRepo.Publisher = publicationData.Publisher;
+                PublisherRepo.OnPublisherCollectionImport();
+            }
+            else if (json.Contains("\"Media\": ["))
+            {
+                MediaRepo.Media.Clear();
+                var publicationData = JsonConvert.DeserializeObject<MediaRepoInstance>(json);
+                MediaRepo.Media = publicationData.Media;
+                MediaRepo.OnMediaCollectionImport();
+            }
+            else if (json.Contains("\"Projects\": ["))
+            {
+                var publicationData = JsonConvert.DeserializeObject<ProjectRepoInstance>(json);
+                ProjectRepo.Projects = publicationData.Projects;
+                ProjectRepo.OnProjectCollectionImport();
+            }
+        }
+
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
         }
 
         private void MenuItem_Click_2(object sender, RoutedEventArgs e)
@@ -361,5 +381,352 @@ namespace DataInputt
                 ((ComboBox)((Grid)((TabItem)e.AddedItems[0]).Content).Children[12]).ItemsSource = j;
             }
         }
+
+        private void ImportDB(object sender, EventArgs e)
+        {
+            inputField.Visibility = Visibility.Visible;
+            cStgring1.Text = Properties.Settings.Default.DBUsername ?? "";
+            cStgring2.Text = Properties.Settings.Default.DBPassword ?? "";
+            cStgring3.Text = Properties.Settings.Default.ConnectionString ?? "";
+            this.command = "Import";
+        }
+        private void ImportDB1()
+        {
+            string q = @"SELECT Id, Bezeichnung AS 'Name', Beschreibung AS 'Description', Datum AS 'Date', Link, Typ AS 'Type', MediumId, Geprueft AS Reviewed FROM Publikationen FOR JSON PATH;";
+            SqlCommand commandX = new SqlCommand(q, MisterDeleteDB.connection);
+            SqlDataReader result = commandX.ExecuteReader();
+            if(result.Read())
+            {
+                string json = result.GetFieldValue<string>(0);
+                int year = 1990;
+                while (year <= DateTime.Today.Year)
+                {
+                    int index = json.IndexOf("\"Date\":\"" + year + "-");
+                    while (index > -1)
+                    {
+                        int index2 = index + 8;
+                        string date = json.Substring(index2, 10);
+                        string date2 = FormatDate(date);
+                        json = json.Replace(date, date2);
+                        index = json.IndexOf("\"Date\":\"" + year + "-");
+                    }
+                    year++;
+                }
+                string before = "{\"types\": [\"Workshop\",\"Vortrag\",\"Artikel\",\"Videotraining\",\"Usergroup\",\"Buch\"],\"Publications\": ";
+                string after = "}";
+                Do(before + json + after);
+            }            
+            result.Close();
+
+            string q2 = @"SELECT Id, Bezeichnung AS 'Name', Link, PublisherId FROM Medien FOR JSON PATH;";
+            SqlCommand command2 = new SqlCommand(q2, MisterDeleteDB.connection);
+            SqlDataReader result2 = command2.ExecuteReader();
+            if (result2.Read())
+            {
+                string json2 = result2.GetFieldValue<string>(0);
+                string before2 = "{\"Media\": ";
+                string after2 = "}";
+                Do(before2 + json2 + after2);
+            }
+            result2.Close();
+
+            string q3 = @"SELECT Id, Bezeichnung AS 'Name', Link FROM Publisher FOR JSON PATH;";
+            SqlCommand command3 = new SqlCommand(q3, MisterDeleteDB.connection);
+            SqlDataReader result3 = command3.ExecuteReader();
+            if(result3.Read())
+            {
+            string json3 = result3.GetFieldValue<string>(0);
+            string before3 = "{\"Publisher\": ";
+            string after3 = "}";
+            Do(before3 + json3 + after3);
+            }
+            result3.Close();
+
+            string q4 = @"SELECT Id, Bezeichnung AS Abstract, Position, Von AS 'From', Bis AS 'To', BisHeute AS UntilToday, Beschreibung AS 'Description', Branche AS Sector FROM Projekte FOR JSON PATH;";
+            SqlCommand command4 = new SqlCommand(q4, MisterDeleteDB.connection);
+            SqlDataReader result4 = command4.ExecuteReader();
+            if (result4.Read())
+            {
+                List<Project> projects = new List<Project>();
+                string json4 = result4.GetFieldValue<string>(0);
+                result4.Close();
+                var publicationData = JsonConvert.DeserializeObject<ProjectRepoInstanceWithoutCollections>("{\"Projects\": " + json4 + "}");
+                foreach (var item in publicationData.Projects)
+                {
+                    List<string> tasks = new List<string>();
+                    List<string> tools = new List<string>();
+                    Project p = new Project();
+                    p.Abstract = item.Abstract;
+                    p.Description = item.Description;
+                    p.From = item.From;
+                    p.Id = item.Id;
+                    p.Position = item.Position;
+                    p.Sector = item.Sector;
+                    p.To = item.To;
+                    p.UntilToday = item.UntilToday;
+
+                    string query1 = $"SELECT Aufgaben.Bezeichnung AS Aufgabe FROM Projekte JOIN Projekte_Aufgaben ON Projekte_Aufgaben.ProjektId = Projekte.Id JOIN Aufgaben ON Aufgaben.Id = Projekte_Aufgaben.AufgabeId WHERE Projekte.Id = {item.Id};";
+                    SqlDataReader dataReader = new SqlCommand(query1, MisterDeleteDB.connection).ExecuteReader();
+                    while (dataReader.Read())
+                    {
+                        string aufgabe = (string)dataReader["Aufgabe"];
+                        tasks.Add(aufgabe);
+                    }
+                    p.Tasks = tasks.ToArray();
+                    dataReader.Close();
+
+                    string query2 = $"SELECT Werkzeuge.Bezeichnung AS Werkzeug FROM Projekte JOIN Projekte_Werkzeuge ON Projekte_Werkzeuge.ProjektId = Projekte.Id JOIN Werkzeuge ON Werkzeuge.Id = Projekte_Werkzeuge.WerkzeugId WHERE Projekte.Id = {item.Id}; ";
+                    SqlDataReader dataReader2 = new SqlCommand(query2, MisterDeleteDB.connection).ExecuteReader();
+                    while (dataReader2.Read())
+                    {
+                        string tool = (string)dataReader2["Werkzeug"];
+                        tools.Add(tool);
+                    }
+                    p.Tools = tools.ToArray();
+                    dataReader2.Close();
+
+                    projects.Add(p);
+                }
+                ProjectRepo.Projects = projects;
+                ProjectRepo.OnProjectCollectionImport();
+            }
+        }
+
+        private string FormatDate(string dateUS)
+        {
+            string day = dateUS.Substring(8, 2);
+            string month = dateUS.Substring(5, 2);
+            string year = dateUS.Substring(0, 4);
+            return $"{day}.{month}.{year}";
+        }
+
+        private void ExPorterDB(object sender, EventArgs e)
+        {
+            inputField.Visibility = Visibility.Visible;
+            cStgring1.Text = Properties.Settings.Default.DBUsername ?? "";
+            cStgring2.Text = Properties.Settings.Default.DBPassword ?? "";
+            cStgring3.Text = Properties.Settings.Default.ConnectionString ?? "";
+            this.command = "Export";
+        }
+        private void ExPorterDB1()
+        {
+            var x = MisterDeleteDB.connection.GetSchema("TABLES");
+            var y = MisterDeleteDB.connection.GetSchema("TABLES", new string[] { null, null, "Publisher" });
+            if (MisterDeleteDB.connection.GetSchema("TABLES", new string[] { null, null, "Publisher" }).Rows.Count <= 0)
+            {
+                SqlCommand createPublisher = MisterDeleteDB.connection.CreateCommand();
+                createPublisher.CommandText = "CREATE TABLE Publisher (" +
+                    "Id int IDENTITY(1, 1) PRIMARY KEY, " +
+                    "Bezeichnung varchar(30) NOT NULL, " +
+                    "Link varchar(255), " +
+                ");";
+                createPublisher.ExecuteNonQuery();
+            }
+
+            if (MisterDeleteDB.connection.GetSchema("TABLES", new string[] { null, null, "Medien" }).Rows.Count <= 0)
+            {
+                SqlCommand crateMedien = MisterDeleteDB.connection.CreateCommand();
+                crateMedien.CommandText = "CREATE TABLE Medien (" +
+                    "Id int IDENTITY(1, 1) PRIMARY KEY, " +
+                    "Bezeichnung varchar(30) NOT NULL, " +
+                    "Link varchar(255), " +
+                    "PublisherId int" +
+                ");";
+                crateMedien.ExecuteNonQuery();
+            }
+
+            if (MisterDeleteDB.connection.GetSchema("TABLES", new string[] { null, null, "Publikationen" }).Rows.Count <= 0)
+            {
+                SqlCommand createPublikationen = MisterDeleteDB.connection.CreateCommand();
+                createPublikationen.CommandText = "CREATE TABLE Publikationen (" +
+                    "Id int IDENTITY(1, 1) PRIMARY KEY, " +
+                    "Bezeichnung varchar(30) NOT NULL, " +
+                    "Datum date NOT NULL, " +
+                    "Beschreibung varchar(400), " + 
+                    "Link varchar(255), " +
+                    "Geprueft bit NOT NULL, " +
+                    "Typ varchar(20) NOT NULL, " + 
+                    "MediumId int, " +
+                    "CHECK ([Typ]='Buch' OR [Typ]='Usergroup' OR [Typ]='Videotraining' OR [Typ]='Artikel' OR [Typ]='Vortrag' OR [Typ]='Workshop')" + 
+                ");";
+                createPublikationen.ExecuteNonQuery();
+            }
+
+            if (MisterDeleteDB.connection.GetSchema("TABLES", new string[] { null, null, "Projekte" }).Rows.Count <= 0)
+            {
+                SqlCommand createPublikationen = MisterDeleteDB.connection.CreateCommand();
+                createPublikationen.CommandText = "CREATE TABLE Projekte (" +
+                    "Id int IDENTITY(1, 1) PRIMARY KEY, " +
+                    "Bezeichnung varchar(30) NOT NULL, " +
+                    "Position varchar(64), " +
+                    "Von varchar(32), " +
+                    "Bis varchar(32), " +
+                    "BisHeute bit, " + 
+                    "Beschreibung varchar(400), " +
+                    "Branche varchar(64), " +
+                ");";
+                createPublikationen.ExecuteNonQuery();
+
+                SqlCommand createTasks = MisterDeleteDB.connection.CreateCommand();
+                createTasks.CommandText = "CREATE TABLE Aufgaben (" +
+                    "Id int IDENTITY(1, 1) PRIMARY KEY, " +
+                    "Bezeichnung varchar(256) NOT NULL);";
+                createTasks.ExecuteNonQuery();
+
+                SqlCommand createTasksProjects = MisterDeleteDB.connection.CreateCommand();
+                createTasksProjects.CommandText = "CREATE TABLE Projekte_Aufgaben (" +
+                    "Id int IDENTITY(1, 1) PRIMARY KEY, " +
+                    "ProjektId int NOT NULL, " +
+                    "AufgabeId int NOT NULL);";
+                createTasksProjects.ExecuteNonQuery();
+
+                SqlCommand createTools = MisterDeleteDB.connection.CreateCommand();
+                createTools.CommandText = "CREATE TABLE Werkzeuge (" +
+                    "Id int IDENTITY(1, 1) PRIMARY KEY, " +
+                    "Bezeichnung varchar(256) NOT NULL);";
+                createTools.ExecuteNonQuery();
+
+                SqlCommand createToolsProjects = MisterDeleteDB.connection.CreateCommand();
+                createToolsProjects.CommandText = "CREATE TABLE Projekte_Werkzeuge (" +
+                    "Id int IDENTITY(1, 1) PRIMARY KEY, " +
+                    "ProjektId int NOT NULL, " +
+                    "WerkzeugId int NOT NULL);";
+                createToolsProjects.ExecuteNonQuery();
+            }
+
+            new SqlCommand("DELETE FROM Publikationen;", MisterDeleteDB.connection).ExecuteNonQuery();
+            foreach (Publication p in this.publikationen.Items)
+            {
+                int myBit = p.Reviewed ? 1 : 0;
+                string q = $"INSERT INTO Publikationen (Bezeichnung, Beschreibung, Datum, Link, Typ, MediumId, Geprueft) VALUES ('{p.Name}', '{p.Description}', '{DateTime.ParseExact(p.Date, "dd.MM.yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}', '{p.Link}', '{p.Type}', {p.MediumId}, {myBit});";
+                SqlCommand c = new SqlCommand(q, MisterDeleteDB.connection);
+                c.ExecuteNonQuery();
+            }
+
+            new SqlCommand("DELETE FROM Medien;", MisterDeleteDB.connection).ExecuteNonQuery();
+            foreach (Medium m in MediaRepo.Media)
+            {
+                string q = $"INSERT INTO Medien (Bezeichnung, Link, PublisherId) VALUES ('{m.Name}', '{m.Link}', {m.PublisherId});";
+                SqlCommand c = new SqlCommand(q, MisterDeleteDB.connection);
+                c.ExecuteNonQuery();
+            }
+
+            new SqlCommand("DELETE FROM Publisher;", MisterDeleteDB.connection).ExecuteNonQuery();
+            foreach (Publisher p in PublisherRepo.Publisher)
+            {
+                string q = $"INSERT INTO Publisher (Bezeichnung, Link) VALUES ('{p.Name}', '{p.Link}');";
+                SqlCommand c = new SqlCommand(q, MisterDeleteDB.connection);
+                c.ExecuteNonQuery();
+            }
+
+            new SqlCommand("DELETE FROM Projekte;", MisterDeleteDB.connection).ExecuteNonQuery();
+            new SqlCommand("DELETE FROM Aufgaben;", MisterDeleteDB.connection).ExecuteNonQuery();
+            new SqlCommand("DELETE FROM Werkzeuge;", MisterDeleteDB.connection).ExecuteNonQuery();
+            new SqlCommand("DELETE FROM Projekte_Aufgaben;", MisterDeleteDB.connection).ExecuteNonQuery();
+            new SqlCommand("DELETE FROM Projekte_Werkzeuge;", MisterDeleteDB.connection).ExecuteNonQuery();
+
+
+            foreach (Project item in ProjectRepo.Projects)
+            {
+                int myBit = item.UntilToday ? 1 : 0;
+                string q = $"INSERT INTO Projekte (Bezeichnung, Position, Von, Bis, BisHeute, Beschreibung, Branche) VALUES ('{item.Abstract}', '{item.Position}', '{item.From}', '{item.To}', {myBit}, '{item.Description}', '{item.Sector}');";
+                new SqlCommand(q, MisterDeleteDB.connection).ExecuteNonQuery();
+                string q2 = $"SELECT Id FROM Projekte WHERE Bezeichnung = '{item.Abstract}' and Von = '{item.From}';";
+                SqlDataReader reader = new SqlCommand(q2, MisterDeleteDB.connection).ExecuteReader();
+                reader.Read();
+                int index = (int)reader["Id"];
+                reader.Close();
+                foreach (string tool in item.Tools)
+                {
+                    string q3 = $"SELECT Id FROM Werkzeuge WHERE Bezeichnung ='{tool}';";
+                    SqlDataReader reader2 = new SqlCommand(q3, MisterDeleteDB.connection).ExecuteReader();
+                    if (reader2.Read())
+                    {
+                        int index2 = (int)reader2["Id"];
+                        reader2.Close();
+                        string q4 = $"INSERT INTO Projekte_Werkzeuge (ProjektId, WerkzeugId) VALUES ({index}, {index2});";
+                        new SqlCommand(q4, MisterDeleteDB.connection).ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        reader2.Close();
+                        string q5 = $"INSERT INTO Werkzeuge (Bezeichnung) VALUES ('{tool}');";
+                        new SqlCommand(q5, MisterDeleteDB.connection).ExecuteNonQuery();
+                        string q6 = $"SELECT Id FROM Werkzeuge WHERE Bezeichnung ='{tool}';";
+                        SqlDataReader reader3 = new SqlCommand(q6, MisterDeleteDB.connection).ExecuteReader();
+                        reader3.Read();
+                        int index3 = (int)reader3["Id"];
+                        reader3.Close();
+                        string q7 = $"INSERT INTO Projekte_Werkzeuge (ProjektId, WerkzeugId) VALUES ({index}, {index3});";
+                        new SqlCommand(q7, MisterDeleteDB.connection).ExecuteNonQuery();
+                    }
+                }
+                foreach (string tool in item.Tasks)
+                {
+                    string q8 = $"SELECT Id FROM Aufgaben WHERE Bezeichnung ='{tool}';";
+                    SqlDataReader reader4 = new SqlCommand(q8, MisterDeleteDB.connection).ExecuteReader();
+                    if (reader4.Read())
+                    {
+                        int index4 = (int)reader4["Id"];
+                        string q9 = $"INSERT INTO Projekte_Aufgaben (ProjektId, AufgabeId) VALUES ({index}, {index4});";
+                        reader4.Close();
+                        new SqlCommand(q9, MisterDeleteDB.connection).ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        reader4.Close();
+                        string q10 = $"INSERT INTO Aufgaben (Bezeichnung) VALUES ('{tool}');";
+                        new SqlCommand(q10, MisterDeleteDB.connection).ExecuteNonQuery();
+                        string q11 = $"SELECT Id FROM Aufgaben WHERE Bezeichnung ='{tool}';";
+                        SqlDataReader reader5 = new SqlCommand(q11, MisterDeleteDB.connection).ExecuteReader();
+                        reader5.Read();
+                        int index5 = (int)reader5["Id"];
+                        string q12 = $"INSERT INTO Projekte_Aufgaben (ProjektId, AufgabeId) VALUES ({index}, {index5});";
+                        reader5.Close();
+                        new SqlCommand(q12, MisterDeleteDB.connection).ExecuteNonQuery();
+                    }
+                }
+                // GET Index of Task and Tool
+                // SET In Table Politik_Task und Politik_Tool
+            }
+        }
+
+        private string command;
+        private void connect(object sender, EventArgs e)
+        {
+            inputField.Visibility = Visibility.Hidden;
+            string user = cStgring1.Text;
+            string pass = cStgring2.Text;
+            string cStr = cStgring3.Text;
+            Properties.Settings.Default.DBUsername = user;
+            Properties.Settings.Default.DBPassword = pass;
+            Properties.Settings.Default.ConnectionString = cStr;
+
+            inputField.Visibility = Visibility.Collapsed;
+            if (command == "Import")
+            {
+                ImportDB1();
+            } else if (command == "Export")
+            {
+                ExPorterDB1();
+            }
+        }
+    }
+
+    class ProjectRepoInstanceWithoutCollections
+    {
+        public List<ProjectWithoutCollections> Projects { get; set; }
+    }
+
+    class ProjectWithoutCollections
+    {
+        public int Id { get; set; }
+        public string Abstract { get; set; }
+        public string Position { get; set; }
+        public string From { get; set; }
+        public string To { get; set; }
+        public bool UntilToday { get; set; }
+        public string Description { get; set; }
+        public string Sector { get; set; }
     }
 }

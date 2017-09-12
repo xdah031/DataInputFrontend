@@ -35,25 +35,52 @@ namespace DataInputt
             InitializeComponent();
             delete = Delete.GetInstance();
             ProjectRepo.ProjectCollectionImported += ProjectRepo_ProjectCollectionImported;
-            projectsList = new List<Project>();
-            //{
-            //    new Project
-            //    {
-            //        Id = i++, Name = "Project1", From = "10.05.2016", To = "10.07.2016", Tools = new string[] {"Jetbrains", "Visual Studio" }, Sector = "Autos"
-            //    },
-            //    new Project
-            //    {
-            //        Id = i++, Name = "Project2", From = "17.01.2016", To = "25.01.2016", Tools = new string[] {"Visual Studio", "Resharper" }, Sector = "Medizin"
-            //    },
-            //    new Project
-            //    {
-            //        Id = i++, Name = "Project3", From = "30.05.2017", To = "10.06.2017", Tools = new string[] {"Jetbrains", "Visual Studio" }, Sector = "Autos"
-            //    }
-            //};
-            //foreach (var item in projectsList)
-            //{
-            //    publisherListView.Items.Add(item);
-            //}
+            projectsList = new List<Project>()
+            {
+                new Project
+                {
+                    Id = i++,
+                    Abstract = "Project1",
+                    From = "10.05.2016",
+                    To = "10.07.2016",
+                    UntilToday = false,
+                    Tools = new string[] { "Jetbrains", "Visual Studio" },
+                    Description = "I have done a project",
+                    Position = "Position1",
+                    Tasks = new string[] { "Write code", "Read code", "Delete code"},
+                    Sector = "Autos"
+                },
+                new Project
+                {
+                    Id = i++,
+                    Abstract = "Project2",
+                    From = "17.01.2016",
+                    To = "25.01.2016",
+                    Tools = new string[] { "Visual Studio", "Resharper" },
+                    Tasks = new string[] { "Clean Up", "Leadership" },
+                    Description = "This was the real shit",
+                    Position = "Position2",
+                    UntilToday = false,
+                    Sector = "Medizin"
+                },
+                new Project
+                {
+                    Id = i++,
+                    Abstract = "Project3",
+                    From = "30.05.2017",
+                    UntilToday = false,
+                    To = "10.06.2017",
+                    Position = "Position1",
+                    Tasks = new string[] { "Write code", "Read code", "Delete code"},
+                    Description = "A projekt about projects",
+                    Tools = new string[] { "Jetbrains", "Visual Studio" },
+                    Sector = "Autos"
+                }
+            };
+            foreach (var item in projectsList)
+            {
+                publisherListView.Items.Add(item);
+            }
             ProjectRepo.Projects = projectsList;
         }
 
