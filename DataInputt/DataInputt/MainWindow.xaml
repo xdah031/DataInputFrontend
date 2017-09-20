@@ -19,9 +19,41 @@
             Height="23"
             HorizontalAlignment="Left"
             VerticalAlignment="Top">
-            <MenuItem Click="MenuItem_Click_1" Header="Importieren" />
-            <MenuItem Click="MenuItem_Click" Header="Exportieren" />
+            <MenuItem Header="Importieren">
+                <MenuItem Click="MenuItem_Click_1" Header="Datei" />
+                <Separator />
+                <MenuItem Click="ImportDB" Header="Datenbank" />
+            </MenuItem>
+            <MenuItem Header="Exportieren">
+                <MenuItem Click="MenuItem_Click" Header="Exportieren" />
+                <Separator />
+                <MenuItem Click="ExPorterDB" Header="Datenbank" />
+            </MenuItem>
         </Menu>
+        <Grid x:Name="inputField" Visibility="Collapsed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Column="0" Margin="0, 0, 3, 0">
+                <Label Margin="0" Content="Username" />
+                <TextBox x:Name="cStgring1" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Margin="0, 0, 3, 0">
+                <Label Margin="0" Content="Password" />
+                <TextBox x:Name="cStgring2" />
+            </StackPanel>
+            <StackPanel Grid.Column="2">
+                <Label Content="ConnectionString" />
+                <TextBox x:Name="cStgring3" />
+            </StackPanel>
+            <Button Grid.Row="1" Margin="0, 4, 0, 4" Content="Anmelden" Click="connect"/>
+        </Grid>
         <TabControl x:Name="tabCtrl" SelectionChanged="tabCtrl_SelectionChanged">
             <TabItem>
                 <TabItem.Header>
