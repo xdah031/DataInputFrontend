@@ -142,44 +142,81 @@ namespace DataInputt
             ProjectRepo.Projects = projectsList;
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
-        {
-            if (bearbeiten.Item1 == true)
-            {
-                projectsList.RemoveAt(projectsList.FindIndex(p => p.Id == bearbeiten.Item2));
-                List<string> tools = new List<string>();
-                Project x = new Project() { Id = bearbeiten.Item2, Abstract = tb1.Text, From = DatePicker1.Text, To = DatePicker2.Text, Tools = tb3.Text.Replace(" ", "").Split(','), Tasks = tb7.Text.Replace(" ", "").Split(','), Position = tb5.Text, Description = tb6.Text, Sector = tb4.Text };
-                if (myCheckbox.IsChecked.Value)
-                {
-                    x.UntilToday = true;
-                    x.To = "";
-                }
-                x.UntilToday = myCheckbox.IsChecked.Value;
-                projectsList.Add(x);
-                projectsList.Sort(new ProjectsComparer());
-                bearbeiten = new Tuple<bool, int>(false, -1);
-            }
-            else
-            {
-                projectsList.Add(new Project() { Id = i++, Abstract = tb1.Text, From = DatePicker1.Text, To = myCheckbox.IsChecked.Value ? "" : DatePicker2.Text, Tools = tb3.Text.Replace(" ", "").Split(','), Sector = tb4.Text, Tasks = tb7.Text.Replace(" ", "").Split(','), Position = tb5.Text, Description = tb6.Text, UntilToday = myCheckbox.IsChecked.Value });
-            }
+                                        private void Button_Click_2(object sender, RoutedEventArgs e)
+                                        {
+                                            if (bearbeiten.Item1 == true)
+                                            {
+                                                projectsList.RemoveAt(projectsList.FindIndex(p => p.Id == bearbeiten.Item2));
+                                                List<string> tools = new List<string>();
+                                                Project a = new Project();
+                                                a.Id = bearbeiten.Item2;
+                                                a.Abstract = tb1.Text;
+                                                a.From = DatePicker1.Text;
+                                                a.To = DatePicker2.Text;
+                                                a.Tools = tb3.Text.Replace(" ", "").Split(',');
+                                                a.Tasks = tb7.Text.Replace(" ", "").Split(',');
+                                                a.Position = tb5.Text;
+                                                a.Description = tb6.Text;
+                                                a.Sector = tb4.Text; // Macht das Refactoring Spaß? :D
+                                                if (myCheckbox.IsChecked.Value)
+                                                {
+                                                    a.UntilToday = true;
+                                                    a.To = "";
+                                                }
+                                                a.UntilToday = myCheckbox.IsChecked.Value;
+                                                projectsList.Add(a);
+                                                projectsList.Sort(new ProjectsComparer());
+                                                bearbeiten = new Tuple<bool, int>(false, -1);
+                                            }
+                                            else
+                                            {
+                                                Project a = new Project();
+                                                a.Id = i++;
+                                                a.Abstract = tb1.Text;
+                                                a.From = DatePicker1.Text;
+                                                a.To = myCheckbox.IsChecked.Value ? "" : DatePicker2.Text;
+                                                a.Tools = tb3.Text.Replace(" ", "").Split(',');
+                                                a.Sector = tb4.Text;
+                                                a.Tasks = tb7.Text.Replace(" ", "").Split(',');
+                                                a.Position = tb5.Text;
+                                                a.Description = tb6.Text;
+                                                a.UntilToday = myCheckbox.IsChecked.Value;
 
-            publisherListView.Items.Clear();
-            foreach (var item in projectsList)
-            {
-                publisherListView.Items.Add(item);
-            }
-            ProjectRepo.Projects = projectsList;
-            tb1.Text = String.Empty;
-            tb3.Text = tb1.Text;
-            tb4.Text = tb1.Text;
-            tb5.Text = tb1.Text;
-            tb6.Text = tb1.Text;
-            tb7.Text = tb1.Text;
-            myCheckbox.IsChecked = null;
-            DatePicker1.SelectedDate = null;
-            DatePicker2.SelectedDate = null;
-        }
+                                                Project b = new Project() { Id = i++, Abstract = tb1.Text, From = DatePicker1.Text, To = myCheckbox.IsChecked.Value ? "" : DatePicker2.Text, Tools = tb3.Text.Replace(" ", "").Split(','), Sector = tb4.Text, Tasks = tb7.Text.Replace(" ", "").Split(','), Position = tb5.Text, Description = tb6.Text, UntilToday = myCheckbox.IsChecked.Value }; var x = new System.Diagnostics.Stopwatch(); x.Start();
+                                #if DEBUG
+                                                System.Diagnostics.Debug.WriteLine(a == b);
+                                #endif
+                                                x.Stop();
+
+                                                int randomGenerator = (int)Math.Round(new Random().NextDouble());
+                                                if (randomGenerator == 1)
+                                                {
+                                                    projectsList.Add(a);
+                                                }
+                                                else
+                                                {
+                                                    projectsList.Add(b);
+                                                }
+                                            }
+
+                                            publisherListView.Items.Clear();
+                                            foreach (var item in projectsList)
+                                            {
+                                                publisherListView.Items.Add(item);
+                                            }
+                                            ProjectRepo.Projects = projectsList;
+                                            tb1.Text = String.Empty;
+                                            tb3.Text = tb1.Text;
+                                            tb4.Text = tb1.Text;
+                                            tb6.Text = tb3.Text;
+                                            tb3.Text = tb1.Text;
+                                            tb5.Text = tb1.Text;
+                                            tb6.Text = tb1.Text;
+                                            tb7.Text = tb1.Text;
+                                            myCheckbox.IsChecked = null;
+                                            DatePicker1.SelectedDate = null;
+                                            DatePicker2.SelectedDate = null;
+                                        }
 
         private void Button_Click_3(object sender, RoutedEventArgs e)
         {
