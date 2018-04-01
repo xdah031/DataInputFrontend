@@ -392,6 +392,7 @@ namespace DataInputt
         }
         private void ImportDB1()
         {
+            // read publications
             string q = @"SELECT Id, Bezeichnung AS 'Name', Beschreibung AS 'Description', Datum AS 'Date', Link, Typ AS 'Type', MediumId, Geprueft AS Reviewed FROM Publikationen FOR JSON PATH;";
             SqlCommand commandX = new SqlCommand(q, MisterDeleteDB.connection);
             SqlDataReader result = commandX.ExecuteReader();
@@ -418,6 +419,7 @@ namespace DataInputt
             }            
             result.Close();
 
+            // read media
             string q2 = @"SELECT Id, Bezeichnung AS 'Name', Link, PublisherId FROM Medien FOR JSON PATH;";
             SqlCommand command2 = new SqlCommand(q2, MisterDeleteDB.connection);
             SqlDataReader result2 = command2.ExecuteReader();
@@ -430,6 +432,7 @@ namespace DataInputt
             }
             result2.Close();
 
+            // read publisher data
             string q3 = @"SELECT Id, Bezeichnung AS 'Name', Link FROM Publisher FOR JSON PATH;";
             SqlCommand command3 = new SqlCommand(q3, MisterDeleteDB.connection);
             SqlDataReader result3 = command3.ExecuteReader();
@@ -442,6 +445,7 @@ namespace DataInputt
             }
             result3.Close();
 
+            // read projects
             string q4 = @"SELECT Id, Bezeichnung AS Abstract, Position, Von AS 'From', Bis AS 'To', BisHeute AS UntilToday, Beschreibung AS 'Description', Branche AS Sector FROM Projekte FOR JSON PATH;";
             SqlCommand command4 = new SqlCommand(q4, MisterDeleteDB.connection);
             SqlDataReader result4 = command4.ExecuteReader();
