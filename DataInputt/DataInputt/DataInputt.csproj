@@ -50,12 +50,21 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.5.1\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -82,6 +91,14 @@
     <Compile Include="DB\MisterDeleteDB.cs" />
     <Compile Include="Delete.cs" />
     <Compile Include="DeleteEventArgs.cs" />
+    <Compile Include="Logging\EventLogger.cs" />
+    <Compile Include="Logging\EventLoggingData.cs" />
+    <Compile Include="Logging\FileLog.cs" />
+    <Compile Include="Logging\FileLogData.cs" />
+    <Compile Include="Logging\ILog.cs" />
+    <Compile Include="Logging\ILogData.cs" />
+    <Compile Include="Logging\LogData.cs" />
+    <Compile Include="Logging\NLogFacade.cs" />
     <Compile Include="MediaData.cs" />
     <Compile Include="MediaRepo.cs" />
     <Compile Include="MediaRepoInstance.cs" />
@@ -150,7 +167,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

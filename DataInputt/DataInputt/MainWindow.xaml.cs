@@ -10,6 +10,10 @@ using System.Data.SqlClient;
 using DataInputt.DB;
 using System.Data.SqlTypes;
 using System.Globalization;
+using System.Reflection;
+using DataInputt.Logging;
+using DataInputt.Properties;
+using NLog;
 
 namespace DataInputt
 {
@@ -22,6 +26,7 @@ namespace DataInputt
         ItemCollection x = new ListView().Items;
         ItemCollection j = new ListView().Items;
         PublicationData data = new PublicationData();
+        private readonly ILog fileLogger;
 
         public MainWindow()
         {
@@ -54,6 +59,56 @@ namespace DataInputt
             };
             publikationen.Items.Add(publication1);
             publikationen.Items.Add(publication2);
+
+            switch (Settings.Default.LoggingImpl)
+            {
+                case nameof(NLogFacade):
+                    this.fileLogger = new NLogFacade(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Trace.log"));
+                    break;
+
+                case nameof(FileLog):
+                    this.fileLogger =
+                        new FileLog(
+                            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Trace.log"),
+                            LogLevel.Trace, true, true);
+                    break;
+
+                case nameof(EventLogger):
+                    this.fileLogger = new EventLogger(Assembly.GetExecutingAssembly().GetName().Name);
+                    break;
+            }
+
+            this.fileLogger.Write(new FileLogData
+            {
+                Message = "Application started",
+                Severity = LogLevel.Info,
+                Timestamp = DateTime.Now
+            });
+            
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+        }
+
+        private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs args)
+        {
+            if (args == null)
+            {
+                return;
+            }
+
+            this.fileLogger.Write(new LogData
+            {
+                Message = $"Unhandled exception occurred: {args.ExceptionObject}",
+                Severity = LogLevel.Fatal
+            });
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            if (this.fileLogger is FileLog fileLogger)
+            {
+                fileLogger.Dispose();
+            }
         }
 
         private void Delete_SomethingDeleted(object sender, DeleteEventArgs e)
@@ -142,6 +197,12 @@ namespace DataInputt
                 {
                     return;
                 }
+
+                this.fileLogger.Write(new LogData
+                {
+                    Message = $"Updated publication '{foundPublication.Name}'",
+                    Severity = LogLevel.Info
+                });
             }
             else
             {
