@@ -14,6 +14,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Linq;
+using System.Reflection;
+using DataInputt.Logging;
+using Path = System.IO.Path;
 
 namespace DataInputt
 {
@@ -153,6 +156,8 @@ namespace DataInputt
             stackPanelMama.Children.Add(clickmes);
 
             this.Content = stackPanelMama;
+
+            this.logger = new CsvLogger(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Logfile.log"));
         }
 
         private void MediaRepo_MediaCollectionImported(object sender, EventArgs e)
@@ -166,6 +171,8 @@ namespace DataInputt
 
         private void Delete_SomethingDeleted(object sender, DeleteEventArgs e)
         {
+            this.logger.Log($"{nameof(Delete_SomethingDeleted)} called");
+
             if(e.Object.GetType() == typeof(Publisher))
             {
                 for (int i = 0; i < listViewKind.Items.Count; i++)
@@ -201,8 +208,12 @@ namespace DataInputt
 
         int qw = -1;
         int itemid = -1;
+        private CsvLogger logger;
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            this.logger.Log($"{nameof(Button_Click)} called");
+
             string bezeichnung = "";
             foreach (var item in listViewKind.Items)
             {
@@ -269,6 +280,8 @@ namespace DataInputt
 
         private void Button_Click1(object sender, RoutedEventArgs e)
         {
+            this.logger.Log($"{nameof(Button_Click1)} called");
+
             int index = (int)((Button)sender).CommandParameter;
             int i = 0;
             while(i < listViewKind.Items.Count)
@@ -291,6 +304,8 @@ namespace DataInputt
 
         private void Add(object sender, RoutedEventArgs e)
         {
+            this.logger.Log($"{nameof(Add)} called");
+
             Medium m = new Medium();
             m.Id = zahl++;
             m.Name = tb1.Text;
