@@ -88,6 +88,7 @@
     <Compile Include="Converter\BoolToBoolConverter.cs" />
     <Compile Include="Converter\NegationConverter.cs" />
     <Compile Include="Converter\WhatTheHeckIsItDoingConverter.cs" />
+    <Compile Include="CsvImporter.cs" />
     <Compile Include="DB\MisterDeleteDB.cs" />
     <Compile Include="Delete.cs" />
     <Compile Include="DeleteEventArgs.cs" />

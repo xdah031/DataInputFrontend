@@ -1,6 +1,7 @@
 ﻿using DataInputt.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -111,6 +112,16 @@ namespace DataInputt
             stackPanelKind1.Margin = new Thickness(31, 10, 0, 0);
             stackPanelKind2.Margin = new Thickness(31, 10, 0, 0);
             stackPanelKind3.Margin = new Thickness(31, 10, 0, 0);
+
+            if (new CsvImporter().TryImportMedia(
+                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Medium.csv"),
+                out var media))
+            {
+                foreach (var _ in media)
+                {
+                    Trace.WriteLine(_);
+                }
+            }
 
             TextBlock textBlockEnkel1 = new TextBlock();
             textBlockEnkel1.Text = "Bezeichnung";
@@ -277,7 +288,7 @@ namespace DataInputt
                 }
             }
         }
-
+        
         private void Button_Click1(object sender, RoutedEventArgs e)
         {
             this.logger.Log($"{nameof(Button_Click1)} called");
