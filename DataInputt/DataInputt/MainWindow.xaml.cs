@@ -168,7 +168,7 @@ namespace DataInputt
             this.medium.SelectedIndex = -1;
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        protected virtual void Button_Click_1(object sender, RoutedEventArgs e)
         {
             var publication = new Publication();
 
