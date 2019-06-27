@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataInputt.Models
 {
-    class Project
+    public class Project
     {
         public int Id { get; set; }
         public string Abstract { get; set; }

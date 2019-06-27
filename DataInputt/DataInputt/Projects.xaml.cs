@@ -30,11 +30,14 @@ namespace DataInputt
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private IProjectRepoSingleton _projectRepo;
+
         public Projects()
         {
             InitializeComponent();
             delete = Delete.GetInstance();
-            ProjectRepo.ProjectCollectionImported += ProjectRepo_ProjectCollectionImported;
+            this._projectRepo = ProjectRepo.Instance;
+            this._projectRepo.ProjectCollectionImported += ProjectRepo_ProjectCollectionImported;
             projectsList = new List<Project>()
             {
                 new Project
@@ -81,7 +84,7 @@ namespace DataInputt
             {
                 publisherListView.Items.Add(item);
             }
-            ProjectRepo.Projects = projectsList;
+            this._projectRepo.Projects = projectsList;
         }
 
         private void ProjectRepo_ProjectCollectionImported(object sender, EventArgs e)
@@ -139,7 +142,7 @@ namespace DataInputt
             {
                 publisherListView.Items.Add(item);
             }
-            ProjectRepo.Projects = projectsList;
+            this._projectRepo.Projects = projectsList;
         }
 
                                         private void Button_Click_2(object sender, RoutedEventArgs e)
@@ -204,7 +207,7 @@ namespace DataInputt
                                             {
                                                 publisherListView.Items.Add(item);
                                             }
-                                            ProjectRepo.Projects = projectsList;
+                                            this._projectRepo.Projects = projectsList;
                                             tb1.Text = String.Empty;
                                             tb3.Text = tb1.Text;
                                             tb4.Text = tb1.Text;

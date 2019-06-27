@@ -309,7 +309,7 @@ namespace DataInputt
                 pri.Publisher = PublisherRepo.Publisher;
                 string json3 = JsonConvert.SerializeObject(pri, Formatting.Indented);
                 ProjectRepoInstance prori = new ProjectRepoInstance();
-                prori.Projects = ProjectRepo.Projects;
+                prori.Projects = ProjectRepo.Instance.Projects;
                 string json4 = JsonConvert.SerializeObject(prori, Formatting.Indented);
                 string directoryPath = Path.GetDirectoryName(saveFileDialog.FileName);
                 string folderName = Path.GetFileNameWithoutExtension(saveFileDialog.FileName);
@@ -403,8 +403,8 @@ namespace DataInputt
             else if (json.Contains("\"Projects\": ["))
             {
                 var publicationData = JsonConvert.DeserializeObject<ProjectRepoInstance>(json);
-                ProjectRepo.Projects = publicationData.Projects;
-                ProjectRepo.OnProjectCollectionImport();
+                ProjectRepo.Instance.Projects = publicationData.Projects;
+                ProjectRepo.Instance.OnProjectCollectionImport();
             }
         }
 
@@ -556,8 +556,8 @@ namespace DataInputt
 
                     projects.Add(p);
                 }
-                ProjectRepo.Projects = projects;
-                ProjectRepo.OnProjectCollectionImport();
+                ProjectRepo.Instance.Projects = projects;
+                ProjectRepo.Instance.OnProjectCollectionImport();
             }
         }
 
@@ -695,7 +695,7 @@ namespace DataInputt
             new SqlCommand("DELETE FROM Projekte_Werkzeuge;", MisterDeleteDB.connection).ExecuteNonQuery();
 
 
-            foreach (Project item in ProjectRepo.Projects)
+            foreach (Project item in ProjectRepo.Instance.Projects)
             {
                 int myBit = item.UntilToday ? 1 : 0;
                 string q = $"INSERT INTO Projekte (Bezeichnung, Position, Von, Bis, BisHeute, Beschreibung, Branche) VALUES ('{item.Abstract}', '{item.Position}', '{item.From}', '{item.To}', {myBit}, '{item.Description}', '{item.Sector}');";

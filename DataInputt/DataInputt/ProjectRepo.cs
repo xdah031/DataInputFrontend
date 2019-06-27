@@ -1,20 +1,38 @@
-﻿using DataInputt.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DataInputt
+﻿namespace DataInputt
 {
-    static class ProjectRepo
+    using System;
+    using System.Collections.Generic;
+
+    using DataInputt.Models;
+
+    public interface IProjectRepoSingleton
     {
-        public static List<Project> Projects { get; set; }
-        public delegate void ProjectsCollectionImportedEventHandler(object sender, EventArgs e);
-        public static event ProjectsCollectionImportedEventHandler ProjectCollectionImported;
-        public static void OnProjectCollectionImport()
+        event ProjectRepo.ProjectsCollectionImportedEventHandler ProjectCollectionImported;
+
+        List<Project> Projects { get; set; }
+
+        void OnProjectCollectionImport();
+    }
+
+    public class ProjectRepo : IProjectRepoSingleton
+    {
+        private static ProjectRepo _instance;
+
+        private ProjectRepo()
         {
-            ProjectCollectionImported(ProjectRepo.Projects, new EventArgs());
+        }
+
+        public delegate void ProjectsCollectionImportedEventHandler(object sender, EventArgs e);
+
+        public event ProjectsCollectionImportedEventHandler ProjectCollectionImported;
+
+        public List<Project> Projects { get; set; }
+
+        public static IProjectRepoSingleton Instance => _instance ?? (_instance = new ProjectRepo());
+
+        public void OnProjectCollectionImport()
+        {
+            ProjectCollectionImported(Projects, new EventArgs());
         }
     }
 }
