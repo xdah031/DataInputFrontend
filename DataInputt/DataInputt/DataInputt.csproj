@@ -102,6 +102,7 @@
     <Compile Include="Logging\ILogData.cs" />
     <Compile Include="Logging\LogData.cs" />
     <Compile Include="Logging\NLogFacade.cs" />
+    <Compile Include="MainWindowAccessor.cs" />
     <Compile Include="MediaData.cs" />
     <Compile Include="MediaRepo.cs" />
     <Compile Include="MediaRepoInstance.cs" />

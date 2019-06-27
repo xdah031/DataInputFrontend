@@ -75,15 +75,19 @@ namespace DataInputt
 
                 case nameof(EventLogger):
                     this.fileLogger = new EventLogger(Assembly.GetExecutingAssembly().GetName().Name);
+
                     break;
             }
 
-            this.fileLogger.Write(new FileLogData
+            if (this.fileLogger != null)
             {
-                Message = "Application started",
-                Severity = LogLevel.Info,
-                Timestamp = DateTime.Now
-            });
+                this.fileLogger.Write(new FileLogData
+                                          {
+                                              Message = "Application started",
+                                              Severity = LogLevel.Info,
+                                              Timestamp = DateTime.Now
+                                          });
+            }
             
             AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
         }
@@ -168,7 +172,7 @@ namespace DataInputt
             this.medium.SelectedIndex = -1;
         }
 
-        protected virtual void Button_Click_1(object sender, RoutedEventArgs e)
+        protected virtual void Save(object sender, RoutedEventArgs e)
         {
             var publication = new Publication();
 

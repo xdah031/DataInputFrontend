@@ -204,7 +204,7 @@
                         Margin="31,428,0,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
-                        Click="Button_Click_1"
+                        Click="Save"
                         Content="Speichern" />
                     <Button
                         Width="301"
