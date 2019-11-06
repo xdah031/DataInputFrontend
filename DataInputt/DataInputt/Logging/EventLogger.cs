@@ -13,7 +13,7 @@ namespace DataInputt.Logging
         {
             if (string.IsNullOrWhiteSpace(source))
             {
-                throw new ArgumentException("No event source specified", nameof(source));
+                throw new ArgumentException("No event source specified");
             }
 
             eventSource = source;
@@ -21,10 +21,13 @@ namespace DataInputt.Logging
 
         public void Write(ILogData data)
         {
-            if (!(data is EventLoggingData eventLoggingData))
+
+            if (!(data is EventLoggingData))
             {
-                throw new ArgumentException(nameof(data));
+                throw new ArgumentException("data");
             }
+
+            EventLoggingData eventLoggingData = (EventLoggingData)data;
 
             if (EventLog.SourceExists(this.eventSource))
             {

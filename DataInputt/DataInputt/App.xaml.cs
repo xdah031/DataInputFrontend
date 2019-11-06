@@ -54,9 +54,13 @@ namespace DataInputt
         protected override void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
-            MisterDeleteDB.connection?.Close();
-            MisterDeleteDB.connection?.Dispose();
-try
+            if (MisterDeleteDB.connection != null) 
+            {
+                MisterDeleteDB.connection.Close();
+                MisterDeleteDB.connection.Dispose();
+            }
+            
+            try
             {
 
                 //First get the 'user-scoped' storage information location reference in the assembly

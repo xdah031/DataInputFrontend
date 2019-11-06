@@ -14,9 +14,9 @@ namespace DataInputt.Converter
         {
             if (value == null)
                 return "";
-            if(value is string[] arr)
+            if(value is string[])
             {
-                if (arr.Length < 1)
+                if (value.ToString().Length < 1)
                 {
                     return "";
                 }

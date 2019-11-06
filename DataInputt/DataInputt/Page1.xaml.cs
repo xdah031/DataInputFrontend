@@ -113,9 +113,11 @@ namespace DataInputt
             stackPanelKind2.Margin = new Thickness(31, 10, 0, 0);
             stackPanelKind3.Margin = new Thickness(31, 10, 0, 0);
 
+            IEnumerable<Medium> media;
+
             if (new Data().TryImportMedia(
                 Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Medium.csv"),
-                out var media))
+                out media))
             {
                 foreach (var _ in media)
                 {
@@ -182,7 +184,7 @@ namespace DataInputt
 
         private void Delete_SomethingDeleted(object sender, DeleteEventArgs e)
         {
-            this.logger.Log($"{nameof(Delete_SomethingDeleted)} called");
+            this.logger.Log("Delete_SomethingDeleted called");
 
             if(e.Object.GetType() == typeof(Publisher))
             {
@@ -223,12 +225,14 @@ namespace DataInputt
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.logger.Log($"{nameof(Button_Click)} called");
+            this.logger.Log("Button_Click called");
 
             string bezeichnung = "";
+            Medium medium;
             foreach (var item in listViewKind.Items)
             {
-                if(item is Medium medium)
+                medium = (Medium)item;
+                if(item is Medium)
                 {
                     if(medium.Id == (int)((Button)sender).CommandParameter)
                     {
@@ -239,7 +243,8 @@ namespace DataInputt
             string url = "";
             foreach (var item in listViewKind.Items)
             {
-                if (item is Medium medium)
+                medium = (Medium)item;
+                if (item is Medium)
                 {
                     if (medium.Id == (int)((Button)sender).CommandParameter)
                     {
@@ -250,7 +255,8 @@ namespace DataInputt
             int id = -1;
             foreach (var item in listViewKind.Items)
             {
-                if (item is Medium medium)
+                medium = (Medium)item;
+                if (item is Medium)
                 {
                     if (medium.Id == (int)((Button)sender).CommandParameter)
                     {
@@ -278,7 +284,8 @@ namespace DataInputt
             clickadd.Click += Edit;
             foreach (var item in listViewKind.Items)
             {
-                if (item is Medium medium)
+                medium = (Medium)item;
+                if (item is Medium)
                 {
                     if (medium.Id == (int)((Button)sender).CommandParameter)
                     {
@@ -291,7 +298,7 @@ namespace DataInputt
         
         private void Button_Click1(object sender, RoutedEventArgs e)
         {
-            this.logger.Log($"{nameof(Button_Click1)} called");
+            this.logger.Log("Button_Click1 called");
 
             int index = (int)((Button)sender).CommandParameter;
             int i = 0;
@@ -315,7 +322,7 @@ namespace DataInputt
 
         private void Add(object sender, RoutedEventArgs e)
         {
-            this.logger.Log($"{nameof(Add)} called");
+            this.logger.Log("Add called");
 
             Medium m = new Medium();
             m.Id = zahl++;

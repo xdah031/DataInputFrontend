@@ -21,7 +21,7 @@ namespace DataInputt.Logging
         {
             if (string.IsNullOrWhiteSpace(filename))
             {
-                throw new ArgumentException("Given filename is invalid", nameof(filename));
+                throw new ArgumentException("Given filename is invalid");
             }
 
             if (File.Exists(filename))
@@ -46,16 +46,18 @@ namespace DataInputt.Logging
         }
 
         public void Write(ILogData data)
-        {
+        {    
             if (data == null)
             {
-                throw new ArgumentNullException(nameof(data));
+                throw new ArgumentNullException("data");
             }
 
-            if (!(data is FileLogData fileLoggingData))
+            if (!(data is FileLogData))
             {
                 throw new InvalidOperationException("Given data is not compatible with this logger");
             }
+
+            FileLogData fileLoggingData = (FileLogData)data;
 
             fileLoggingData.Timestamp = useUtcTimestamps ? DateTime.UtcNow : DateTime.Now;
 
@@ -67,7 +69,7 @@ namespace DataInputt.Logging
             }
             else
             {
-                sw.WriteLine($"{DateTime.Now}: {data.Message}");
+                sw.WriteLine("{1}: {2}", DateTime.Now, data.Message);
                 sw.Flush();
             }
         }
@@ -91,9 +93,10 @@ namespace DataInputt.Logging
                         return;
 
                     case 1: // doLogging
-                        while (messageQueue.TryDequeue(out var data))
+                        FileLogData data;
+                        while (messageQueue.TryDequeue(out data))
                         {
-                            sw.WriteLine($"{data.Timestamp}: {data.Message}");
+                            sw.WriteLine("{1}: {2}", data.Timestamp, data.Message);
                             sw.Flush();
                         }
 
