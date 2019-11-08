@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataInputt.Models
 {
-    class Project
+    public class Project
     {
         public int Id { get; set; }
         public string Abstract { get; set; }
@@ -15,8 +15,25 @@ namespace DataInputt.Models
         public string To { get; set; }
         public bool UntilToday { get; set; }
         public string Description { get; set; }
-        public string[] Tasks { get; set; }
-        public string[] Tools { get; set; }
+        public string[] Tasks 
+        {
+            get { return TasksAsString.Split(',').ToArray(); }
+            set
+            {
+                TasksAsString = String.Join(",", value);
+            }
+        }
+        public string[] Tools 
+        {
+            get { return ToolsAsString.Split(',').ToArray(); }
+            set
+            {
+                ToolsAsString = String.Join(",", value);
+            }
+        }
         public string Sector { get; set; }
+
+        public string TasksAsString { get; set; }
+        public string ToolsAsString { get; set; }
     }
 }

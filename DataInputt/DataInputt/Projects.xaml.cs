@@ -86,13 +86,19 @@ namespace DataInputt
 
         private void ProjectRepo_ProjectCollectionImported(object sender, EventArgs e)
         {
-            projectsList.Clear();
+            /*projectsList.Clear();
             foreach (var item in (List<Project>)sender)
             {
                 projectsList.Add(item);
                 publisherListView.Items.Clear();
             }
             foreach (var item in projectsList)
+            {
+                publisherListView.Items.Add(item);
+            }*/
+
+            publisherListView.Items.Clear();
+            foreach (var item in (List<Project>)sender)
             {
                 publisherListView.Items.Add(item);
             }

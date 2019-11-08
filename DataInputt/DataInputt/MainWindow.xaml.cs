@@ -14,6 +14,7 @@ using System.Reflection;
 using DataInputt.Logging;
 using DataInputt.Properties;
 using NLog;
+using System.Linq;
 
 namespace DataInputt
 {
@@ -27,6 +28,8 @@ namespace DataInputt
         ItemCollection j = new ListView().Items;
         PublicationData data = new PublicationData();
         private readonly ILog fileLogger;
+        
+        private DataContext _context = new DataContext();
 
         public MainWindow()
         {
@@ -774,8 +777,159 @@ namespace DataInputt
             } else if (command == "Export")
             {
                 ExPorterDB1();
+            } else if (command == "ImportEF")
+            {
+                ImportDB2();
+            } else if (command == "ExportEF")
+            {
+                ExPorterDB2();
             }
         }
+
+        private void ImportDB_EF(object sender, RoutedEventArgs e)
+        {
+            ImportDB2();
+            /*inputField.Visibility = Visibility.Visible;
+            cStgring1.Text = Properties.Settings.Default.DBUsername ?? "";
+            cStgring2.Text = Properties.Settings.Default.DBPassword ?? "";
+            cStgring3.Text = Properties.Settings.Default.ConnectionString ?? "";
+            this.command = "ImportEF";*/
+        }
+        private void ImportDB2()
+        {
+            // Read DB
+            using (var db = new DataContext())
+            {
+                // Drop DB
+                // db.Database.Delete();
+
+                // Init Database for EF
+                if (!db.Publications.Any() && !db.Media.Any() && !db.Publishers.Any() && !db.Projects.Any())
+                    InitEFDb();
+
+                // Import Publication
+                // Display all Publications from the database
+                var query = from b in db.Publications
+                            orderby b.Id
+                            select b;
+
+                Console.WriteLine("Read all Publications in the database...");
+                this.publikationen.Items.Clear();
+                foreach (var item in query)
+                {
+                    this.publikationen.Items.Add(item);
+                }
+
+                // Import Media
+                // Display all Media from the database
+                var query2 = from b in db.Media
+                            orderby b.Id
+                            select b;
+
+                Console.WriteLine("Read all Media in the database...");
+                MediaRepo.Media.Clear();
+                foreach (var item in query2)
+                {
+                    MediaRepo.Media.Add(item);
+                }
+                MediaRepo.OnMediaCollectionImport();
+
+                // Import Publishers
+                // Display all Publishers from the database
+                var query3 = from b in db.Publishers
+                             orderby b.Id
+                             select b;
+
+                Console.WriteLine("Read all Publishers in the database...");
+                PublisherRepo.Publisher.Clear();
+                foreach (var item in query3)
+                {
+                    PublisherRepo.Publisher.Add(item);
+                }
+                PublisherRepo.OnPublisherCollectionImport();
+
+                // Import Projects
+                // Display all Projects from the database
+                var query4 = from b in db.Projects
+                             orderby b.Id
+                             select b;
+
+                Console.WriteLine("Read all Projects in the database...");
+                ProjectRepo.Projects.Clear();
+                foreach (var item in query4)
+                {
+                    ProjectRepo.Projects.Add(item);
+                }
+                ProjectRepo.OnProjectCollectionImport();
+            }
+
+            Console.WriteLine("Import Database with EF completed!");
+        }
+        private void InitEFDb()
+        {
+            using (var db = new DataContext())
+            {
+                var pub = new Publication { Name = "Publikation1", Description = "1. Publication", Date = "10.11.2019", Link = null, Type = "Vortrag", MediumId = 1, Reviewed = false };
+                var pub2 = new Publication { Name = "Publikation2", Description = "2. Publication", Date = "10.11.2019", Link = null, Type = "Vortrag", MediumId = 2, Reviewed = true };
+                db.Publications.Add(pub);
+                db.Publications.Add(pub2);
+
+                var med = new Medium { Name = "Media3", Link = null, PublisherId = 1 };
+                var med2 = new Medium { Name = "Medium4", Link = null, PublisherId = 2 };
+                db.Media.Add(med);
+                db.Media.Add(med2);
+
+                var publ = new Publisher { Name = "Publisher1", Link = null };
+                var publ2 = new Publisher { Name = "Publisher1", Link = null };
+                db.Publishers.Add(publ);
+                db.Publishers.Add(publ2);
+
+                var pro = new Project { Abstract = "Projekt1", Position = "Position1", From = "01.10.2019", To = "20.10.2019", UntilToday = false, Description = "Done", Tasks = new string[] { "Write code", "Read code", "Delete code" }, Tools = new string[] { "Visual Studio" }, Sector = "Autos" };
+                var pro2 = new Project { Abstract = "Projekt2", Position = "Position1", From = "02.11.2019", To = "22.11.2019", UntilToday = true, Description = "A Bad Project", Tasks = new string[] { "Clean Up", "Debug" }, Tools = new string[] { "Jetbrains", "Visual Studio" }, Sector = "Autos" };
+                db.Projects.Add(pro);
+                db.Projects.Add(pro2);
+
+                db.SaveChanges();
+            }
+        }
+
+        private void ExPorterDB_EF(object sender, RoutedEventArgs e)
+        {
+            ExPorterDB2();
+            /*inputField.Visibility = Visibility.Visible;
+            cStgring1.Text = Properties.Settings.Default.DBUsername ?? "";
+            cStgring2.Text = Properties.Settings.Default.DBPassword ?? "";
+            cStgring3.Text = Properties.Settings.Default.ConnectionString ?? "";
+            this.command = "ExportEF";*/
+        }
+        private void ExPorterDB2()
+        {
+            using (var db = new DataContext())
+            {
+                db.Database.Delete();
+                foreach (Publication p in this.publikationen.Items)
+                {
+                    //Console.WriteLine(p.Id + " " + p.Name);
+                    db.Publications.Add(p);
+                }
+                foreach (Medium m in MediaRepo.Media)
+                {
+                    db.Media.Add(m);
+                }
+                foreach (Publisher p in PublisherRepo.Publisher)
+                {
+                    db.Publishers.Add(p);
+                }
+                foreach (Project p in ProjectRepo.Projects)
+                {
+                    db.Projects.Add(p);
+                }
+                db.SaveChanges();
+            }
+
+            Console.WriteLine("Export Database with EF completed!");
+        }
+
     }
 
     class ProjectRepoInstanceWithoutCollections

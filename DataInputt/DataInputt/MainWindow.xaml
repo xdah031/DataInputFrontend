@@ -23,11 +23,13 @@
                 <MenuItem Click="MenuItem_Click_1" Header="Datei" />
                 <Separator />
                 <MenuItem Click="ImportDB" Header="Datenbank" />
+                <MenuItem Click="ImportDB_EF" Header="Datenbank (Neu)" />
             </MenuItem>
             <MenuItem Header="Exportieren">
                 <MenuItem Click="MenuItem_Click" Header="Exportieren" />
                 <Separator />
-                <MenuItem Click="ExPorterDB" Header="Datenbank" />
+                <MenuItem Click="ExPorterDB" Header="Datenbank (Alt)" />
+                <MenuItem Click="ExPorterDB_EF" Header="Datenbank" />
             </MenuItem>
         </Menu>
         <Grid x:Name="inputField" Visibility="Collapsed">

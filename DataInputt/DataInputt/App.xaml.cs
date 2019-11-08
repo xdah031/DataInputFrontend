@@ -65,7 +65,7 @@ try
                 StreamWriter srWriter = new StreamWriter(new IsolatedStorageFileStream("iso", FileMode.Create, isolatedStorage));
                 //check the Application property collection contains any values.
                 {
-                    //wriet to the isolated storage created in the above code section.
+                    //write to the isolated storage created in the above code section.
                     srWriter.WriteLine(DataInputt.Properties.Settings.Default.ConnectionString);
                     srWriter.WriteLine(DataInputt.Properties.Settings.Default.DBUsername);
                     srWriter.WriteLine(DataInputt.Properties.Settings.Default.DBPassword);
