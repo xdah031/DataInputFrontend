@@ -12,7 +12,7 @@ namespace DataInputt.Logging
         {
             if (string.IsNullOrWhiteSpace(filename))
             {
-                throw new ArgumentException("Given filename is invalid", nameof(filename));
+                throw new ArgumentException("Given filename is invalid");
             }
 
             // Create logging target
@@ -27,7 +27,7 @@ namespace DataInputt.Logging
                 return;
             }
 
-            sw.WriteLine($"{DateTime.Now}: {message}");
+            sw.WriteLine("{0}: {1}", DateTime.Now, message);
             sw.Flush();
         }
 
