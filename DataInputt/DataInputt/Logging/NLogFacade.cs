@@ -14,7 +14,7 @@ namespace DataInputt.Logging
         {
             if (string.IsNullOrWhiteSpace(filename))
             {
-                throw new ArgumentException("Given filename is invalid", nameof(filename));
+                throw new ArgumentException("Given filename is invalid");
             }
 
             var config = new NLog.Config.LoggingConfiguration();

@@ -32,9 +32,11 @@ namespace DataInputt
                 }
 
                 var medium = new Medium();
+                int id;
+                Uri uriResult;
 
                 if (string.IsNullOrEmpty(colums[0]) == false &&
-                    int.TryParse(colums[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var id))
+                    int.TryParse(colums[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out id))
                 {
                     medium.Id = id;
                 }
@@ -45,7 +47,7 @@ namespace DataInputt
                 }
 
                 if (string.IsNullOrEmpty(colums[2]) == false &&
-                    Uri.TryCreate(colums[2], UriKind.Absolute, out var uriResult) &&
+                    Uri.TryCreate(colums[2], UriKind.Absolute, out uriResult) &&
                     (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
                 {
                     medium.Link = colums[2];

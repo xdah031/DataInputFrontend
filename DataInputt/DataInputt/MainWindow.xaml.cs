@@ -65,18 +65,18 @@ namespace DataInputt
 
             switch (Settings.Default.LoggingImpl)
             {
-                case nameof(NLogFacade):
+                case "NLogFacade":
                     this.fileLogger = new NLogFacade(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Trace.log"));
                     break;
 
-                case nameof(FileLog):
+                case "FileLog":
                     this.fileLogger =
                         new FileLog(
                             Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Trace.log"),
                             LogLevel.Trace, true, true);
                     break;
 
-                case nameof(EventLogger):
+                case "EventLogger":
                     this.fileLogger = new EventLogger(Assembly.GetExecutingAssembly().GetName().Name);
                     break;
             }
@@ -100,7 +100,7 @@ namespace DataInputt
 
             this.fileLogger.Write(new LogData
             {
-                Message = $"Unhandled exception occurred: {args.ExceptionObject}",
+                Message = String.Format("Unhandled exception occurred: {0}", args.ExceptionObject),
                 Severity = LogLevel.Fatal
             });
         }
@@ -108,8 +108,9 @@ namespace DataInputt
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
-            if (this.fileLogger is FileLog fileLogger)
+            if (this.fileLogger is FileLog)
             {
+                FileLog fileLogger = (FileLog)this.fileLogger;
                 fileLogger.Dispose();
             }
         }
@@ -118,8 +119,9 @@ namespace DataInputt
         {
             if(sender.GetType() == typeof(Page1))
             {
-                if (e.Object is Medium medi)
+                if (e.Object is Medium)
                 {
+                    var medi = (Medium)e.Object;
                     for(int i = 0; i < publikationen.Items.Count; i++)
                     {
                         var item = publikationen.Items[i];
@@ -203,7 +205,7 @@ namespace DataInputt
 
                 this.fileLogger.Write(new LogData
                 {
-                    Message = $"Updated publication '{foundPublication.Name}'",
+                    Message = String.Format("Updated publication '{0}'", foundPublication.Name),
                     Severity = LogLevel.Info
                 });
             }
@@ -533,7 +535,7 @@ namespace DataInputt
                     p.To = item.To;
                     p.UntilToday = item.UntilToday;
 
-                    string query1 = $"SELECT Aufgaben.Bezeichnung AS Aufgabe FROM Projekte JOIN Projekte_Aufgaben ON Projekte_Aufgaben.ProjektId = Projekte.Id JOIN Aufgaben ON Aufgaben.Id = Projekte_Aufgaben.AufgabeId WHERE Projekte.Id = {item.Id};";
+                    string query1 = String.Format("SELECT Aufgaben.Bezeichnung AS Aufgabe FROM Projekte JOIN Projekte_Aufgaben ON Projekte_Aufgaben.ProjektId = Projekte.Id JOIN Aufgaben ON Aufgaben.Id = Projekte_Aufgaben.AufgabeId WHERE Projekte.Id = {0};", item.Id);
                     SqlDataReader dataReader = new SqlCommand(query1, MisterDeleteDB.connection).ExecuteReader();
                     while (dataReader.Read())
                     {
@@ -543,7 +545,7 @@ namespace DataInputt
                     p.Tasks = tasks.ToArray();
                     dataReader.Close();
 
-                    string query2 = $"SELECT Werkzeuge.Bezeichnung AS Werkzeug FROM Projekte JOIN Projekte_Werkzeuge ON Projekte_Werkzeuge.ProjektId = Projekte.Id JOIN Werkzeuge ON Werkzeuge.Id = Projekte_Werkzeuge.WerkzeugId WHERE Projekte.Id = {item.Id}; ";
+                    string query2 = String.Format("SELECT Werkzeuge.Bezeichnung AS Werkzeug FROM Projekte JOIN Projekte_Werkzeuge ON Projekte_Werkzeuge.ProjektId = Projekte.Id JOIN Werkzeuge ON Werkzeuge.Id = Projekte_Werkzeuge.WerkzeugId WHERE Projekte.Id = {0}; ", item.Id);
                     SqlDataReader dataReader2 = new SqlCommand(query2, MisterDeleteDB.connection).ExecuteReader();
                     while (dataReader2.Read())
                     {
@@ -565,7 +567,7 @@ namespace DataInputt
             string day = dateUS.Substring(8, 2);
             string month = dateUS.Substring(5, 2);
             string year = dateUS.Substring(0, 4);
-            return $"{day}.{month}.{year}";
+            return String.Format("{0}.{1}.{2}", day, month, year);
         }
 
         private void ExPorterDB(object sender, EventArgs e)
@@ -666,7 +668,7 @@ namespace DataInputt
             foreach (Publication p in this.publikationen.Items)
             {
                 int myBit = p.Reviewed ? 1 : 0;
-                string q = $"INSERT INTO Publikationen (Bezeichnung, Beschreibung, Datum, Link, Typ, MediumId, Geprueft) VALUES ('{p.Name}', '{p.Description}', '{DateTime.ParseExact(p.Date, "dd.MM.yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}', '{p.Link}', '{p.Type}', {p.MediumId}, {myBit});";
+                string q = String.Format("INSERT INTO Publikationen (Bezeichnung, Beschreibung, Datum, Link, Typ, MediumId, Geprueft) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', {5}, {6});", p.Name, p.Description, DateTime.ParseExact(p.Date, "dd.MM.yyyy", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture), p.Link, p.Type, p.MediumId, myBit);
                 SqlCommand c = new SqlCommand(q, MisterDeleteDB.connection);
                 c.ExecuteNonQuery();
             }
@@ -674,7 +676,7 @@ namespace DataInputt
             new SqlCommand("DELETE FROM Medien;", MisterDeleteDB.connection).ExecuteNonQuery();
             foreach (Medium m in MediaRepo.Media)
             {
-                string q = $"INSERT INTO Medien (Bezeichnung, Link, PublisherId) VALUES ('{m.Name}', '{m.Link}', {m.PublisherId});";
+                string q = String.Format("INSERT INTO Medien (Bezeichnung, Link, PublisherId) VALUES ('{0}', '{1}', {2});", m.Name, m.Link, m.PublisherId);
                 SqlCommand c = new SqlCommand(q, MisterDeleteDB.connection);
                 c.ExecuteNonQuery();
             }
@@ -682,7 +684,7 @@ namespace DataInputt
             new SqlCommand("DELETE FROM Publisher;", MisterDeleteDB.connection).ExecuteNonQuery();
             foreach (Publisher p in PublisherRepo.Publisher)
             {
-                string q = $"INSERT INTO Publisher (Bezeichnung, Link) VALUES ('{p.Name}', '{p.Link}');";
+                string q = String.Format("INSERT INTO Publisher (Bezeichnung, Link) VALUES ('{0}', '{1}');", p.Name, p.Link);
                 SqlCommand c = new SqlCommand(q, MisterDeleteDB.connection);
                 c.ExecuteNonQuery();
             }
@@ -697,59 +699,59 @@ namespace DataInputt
             foreach (Project item in ProjectRepo.Projects)
             {
                 int myBit = item.UntilToday ? 1 : 0;
-                string q = $"INSERT INTO Projekte (Bezeichnung, Position, Von, Bis, BisHeute, Beschreibung, Branche) VALUES ('{item.Abstract}', '{item.Position}', '{item.From}', '{item.To}', {myBit}, '{item.Description}', '{item.Sector}');";
+                string q = String.Format("INSERT INTO Projekte (Bezeichnung, Position, Von, Bis, BisHeute, Beschreibung, Branche) VALUES ('{0}', '{1}', '{2}', '{3}', {4}, '{5}', '{6}');", item.Abstract, item.Position, item.From, item.To, myBit, item.Description, item.Sector);
                 new SqlCommand(q, MisterDeleteDB.connection).ExecuteNonQuery();
-                string q2 = $"SELECT Id FROM Projekte WHERE Bezeichnung = '{item.Abstract}' and Von = '{item.From}';";
+                string q2 = String.Format("SELECT Id FROM Projekte WHERE Bezeichnung = '{0}' and Von = '{1}';", item.Abstract, item.From);
                 SqlDataReader reader = new SqlCommand(q2, MisterDeleteDB.connection).ExecuteReader();
                 reader.Read();
                 int index = (int)reader["Id"];
                 reader.Close();
                 foreach (string tool in item.Tools)
                 {
-                    string q3 = $"SELECT Id FROM Werkzeuge WHERE Bezeichnung ='{tool}';";
+                    string q3 = String.Format("SELECT Id FROM Werkzeuge WHERE Bezeichnung ='{0}';", tool);
                     SqlDataReader reader2 = new SqlCommand(q3, MisterDeleteDB.connection).ExecuteReader();
                     if (reader2.Read())
                     {
                         int index2 = (int)reader2["Id"];
                         reader2.Close();
-                        string q4 = $"INSERT INTO Projekte_Werkzeuge (ProjektId, WerkzeugId) VALUES ({index}, {index2});";
+                        string q4 = String.Format("INSERT INTO Projekte_Werkzeuge (ProjektId, WerkzeugId) VALUES ({0}, {1});", index, index2);
                         new SqlCommand(q4, MisterDeleteDB.connection).ExecuteNonQuery();
                     }
                     else
                     {
                         reader2.Close();
-                        string q5 = $"INSERT INTO Werkzeuge (Bezeichnung) VALUES ('{tool}');";
+                        string q5 = String.Format("INSERT INTO Werkzeuge (Bezeichnung) VALUES ('{0}');", tool);
                         new SqlCommand(q5, MisterDeleteDB.connection).ExecuteNonQuery();
-                        string q6 = $"SELECT Id FROM Werkzeuge WHERE Bezeichnung ='{tool}';";
+                        string q6 = String.Format("SELECT Id FROM Werkzeuge WHERE Bezeichnung ='{0}';", tool);
                         SqlDataReader reader3 = new SqlCommand(q6, MisterDeleteDB.connection).ExecuteReader();
                         reader3.Read();
                         int index3 = (int)reader3["Id"];
                         reader3.Close();
-                        string q7 = $"INSERT INTO Projekte_Werkzeuge (ProjektId, WerkzeugId) VALUES ({index}, {index3});";
+                        string q7 = String.Format("INSERT INTO Projekte_Werkzeuge (ProjektId, WerkzeugId) VALUES ({0}, {1});", index, index3);
                         new SqlCommand(q7, MisterDeleteDB.connection).ExecuteNonQuery();
                     }
                 }
                 foreach (string tool in item.Tasks)
                 {
-                    string q8 = $"SELECT Id FROM Aufgaben WHERE Bezeichnung ='{tool}';";
+                    string q8 = String.Format("SELECT Id FROM Aufgaben WHERE Bezeichnung ='{0}';", tool);
                     SqlDataReader reader4 = new SqlCommand(q8, MisterDeleteDB.connection).ExecuteReader();
                     if (reader4.Read())
                     {
                         int index4 = (int)reader4["Id"];
-                        string q9 = $"INSERT INTO Projekte_Aufgaben (ProjektId, AufgabeId) VALUES ({index}, {index4});";
+                        string q9 = String.Format("INSERT INTO Projekte_Aufgaben (ProjektId, AufgabeId) VALUES ({0}, {1});", index,index4);
                         reader4.Close();
                         new SqlCommand(q9, MisterDeleteDB.connection).ExecuteNonQuery();
                     }
                     else
                     {
                         reader4.Close();
-                        string q10 = $"INSERT INTO Aufgaben (Bezeichnung) VALUES ('{tool}');";
+                        string q10 = String.Format("INSERT INTO Aufgaben (Bezeichnung) VALUES ('{0}');", tool);
                         new SqlCommand(q10, MisterDeleteDB.connection).ExecuteNonQuery();
-                        string q11 = $"SELECT Id FROM Aufgaben WHERE Bezeichnung ='{tool}';";
+                        string q11 = String.Format("SELECT Id FROM Aufgaben WHERE Bezeichnung ='{0}';", tool);
                         SqlDataReader reader5 = new SqlCommand(q11, MisterDeleteDB.connection).ExecuteReader();
                         reader5.Read();
                         int index5 = (int)reader5["Id"];
-                        string q12 = $"INSERT INTO Projekte_Aufgaben (ProjektId, AufgabeId) VALUES ({index}, {index5});";
+                        string q12 = String.Format("INSERT INTO Projekte_Aufgaben (ProjektId, AufgabeId) VALUES ({0}, {1});", index, index5);
                         reader5.Close();
                         new SqlCommand(q12, MisterDeleteDB.connection).ExecuteNonQuery();
                     }
