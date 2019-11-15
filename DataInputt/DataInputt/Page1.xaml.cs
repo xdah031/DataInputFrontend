@@ -14,7 +14,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Linq;
 using System.Reflection;
 using DataInputt.Logging;
 using Path = System.IO.Path;
@@ -179,6 +178,7 @@ namespace DataInputt
             foreach (var item in (List<Medium>)sender)
             {
                 listViewKind.Items.Add(item);
+                zahl++;
             }
         }
 

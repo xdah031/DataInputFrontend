@@ -54,7 +54,7 @@ namespace DataInputt
         {
             publisherList = (List<Publisher>)sender;
             publisherListView.Items.Clear();
-            int i = 0;
+            //int i = 0;
             foreach (var item in publisherList)
             {
                 publisherListView.Items.Add(item);

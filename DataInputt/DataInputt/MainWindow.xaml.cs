@@ -15,6 +15,7 @@ using DataInputt.Logging;
 using DataInputt.Properties;
 using NLog;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataInputt
 {
@@ -802,8 +803,8 @@ namespace DataInputt
             // Read DB
             using (var db = new DataContext())
             {
-                // Drop DB
-                // db.Database.Delete();
+                db.Database.EnsureCreated();
+                db.Database.Migrate();
 
                 // Init Database for EF
                 if (!db.Publications.Any() && !db.Media.Any() && !db.Publishers.Any() && !db.Projects.Any())
@@ -908,25 +909,32 @@ namespace DataInputt
         {
             using (var db = new DataContext())
             {
-                db.Database.Delete();
+                db.Database.EnsureDeleted();
+                db.Database.EnsureCreated();
+
                 foreach (Publication p in this.publikationen.Items)
                 {
-                    //Console.WriteLine(p.Id + " " + p.Name);
+                    //Id wird von Datenbank erstellt
+                    p.Id = default(int);
                     db.Publications.Add(p);
                 }
                 foreach (Medium m in MediaRepo.Media)
                 {
+                    m.Id = default(int);
                     db.Media.Add(m);
                 }
                 foreach (Publisher p in PublisherRepo.Publisher)
                 {
+                    p.Id = default(int);
                     db.Publishers.Add(p);
                 }
                 foreach (Project p in ProjectRepo.Projects)
                 {
+                    p.Id = default(int);
                     db.Projects.Add(p);
                 }
                 db.SaveChanges();
+                ImportDB2();
             }
 
             Console.WriteLine("Export Database with EF completed!");
